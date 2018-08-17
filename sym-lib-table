@@ -1,4 +1,4 @@
 (sym_lib_table
-  (lib (name cc1350-swim-thermo-rescue)(type Legacy)(uri ${KIPRJMOD}/cc1350-swim-thermo-rescue.lib)(options "")(descr ""))
   (lib (name cc1350)(type Legacy)(uri ${KIPRJMOD}/cc1350.lib)(options "")(descr ""))
+  (lib (name cc1352)(type Legacy)(uri /Users/mikael/Code/cc1352-swim-thermo/cc1352.lib)(options "")(descr ""))
 )
