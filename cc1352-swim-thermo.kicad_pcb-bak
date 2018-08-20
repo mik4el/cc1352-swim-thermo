@@ -3,7 +3,7 @@
   (general
     (thickness 1.6)
     (drawings 17)
-    (tracks 356)
+    (tracks 357)
     (zones 0)
     (modules 73)
     (nets 65)
@@ -1124,7 +1124,7 @@
   )
 
   (module Connector_Coaxial:SMA_Amphenol_132289_EdgeMount (layer F.Cu) (tedit 5A1C1810) (tstamp 5B8083F1)
-    (at 129.58 105.08)
+    (at 129.5 107.33)
     (descr http://www.amphenolrf.com/132289.html)
     (tags SMA)
     (path /5BA247C9)
@@ -3109,6 +3109,7 @@
   (segment (start 89.23 108.77) (end 87.9825 108.77) (width 0.15) (layer F.Cu) (net 30) (status 10))
   (segment (start 87.1 108.0475) (end 87.18 107.9675) (width 0.15) (layer F.Cu) (net 30) (status 30))
   (segment (start 87.1 109.45) (end 87.1 108.0475) (width 0.15) (layer F.Cu) (net 30) (status 30))
+  (segment (start 96.86 121.839366) (end 96.86 126.03) (width 0.34) (layer F.Cu) (net 31))
   (segment (start 90.38 95.8025) (end 88.5025 97.68) (width 0.5) (layer F.Cu) (net 32))
   (segment (start 90.38 93.88) (end 90.38 95.8025) (width 0.5) (layer F.Cu) (net 32) (status 10))
   (segment (start 88.5025 97.68) (end 87.26 97.68) (width 0.5) (layer F.Cu) (net 32))
@@ -5108,7 +5109,7 @@
     (fill (arc_segments 16) (thermal_gap 0.42) (thermal_bridge_width 0.5))
     (polygon
       (pts
-        (xy 126.89 108.66) (xy 126.98 101.83) (xy 132.26 101.8) (xy 132.13 108.69)
+        (xy 100.26 128.68) (xy 93.43 128.59) (xy 93.4 123.31) (xy 100.29 123.44)
       )
     )
   )
