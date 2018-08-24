@@ -1082,10 +1082,6 @@ Connection ~ 7350 2100
 Wire Wire Line
 	7350 2100 7250 2100
 Wire Wire Line
-	5300 7200 5550 7200
-Wire Wire Line
-	5300 6350 5300 7200
-Wire Wire Line
 	5550 6350 5300 6350
 Wire Wire Line
 	6100 6350 5850 6350
@@ -1093,7 +1089,7 @@ Connection ~ 6150 7200
 Wire Wire Line
 	5850 7200 6150 7200
 Wire Wire Line
-	1150 7200 900  7200
+	1150 7200 1000 7200
 Text Notes 5450 7000 0    60   ~ 0
 Antenna matching
 Wire Notes Line
@@ -1685,9 +1681,6 @@ Wire Wire Line
 Wire Wire Line
 	4750 6550 4750 6650
 Wire Wire Line
-	4750 7200 5300 7200
-Connection ~ 5300 7200
-Wire Wire Line
 	4750 6950 4750 7200
 Wire Wire Line
 	10900 1900 10900 2000
@@ -1751,4 +1744,38 @@ NoConn ~ 3400 2600
 NoConn ~ 3750 3300
 NoConn ~ 3100 5100
 NoConn ~ 4750 6800
+Wire Wire Line
+	5300 6350 5300 7200
+Connection ~ 5300 7200
+Wire Wire Line
+	4750 7200 5300 7200
+Wire Wire Line
+	5300 7200 5550 7200
+$Comp
+L power:GND #PWR01
+U 1 1 5B826D08
+P 1000 7550
+F 0 "#PWR01" H 1000 7300 50  0001 C CNN
+F 1 "GND" H 1000 7400 50  0000 C CNN
+F 2 "" H 1000 7550 50  0000 C CNN
+F 3 "" H 1000 7550 50  0000 C CNN
+	1    1000 7550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L L2
+U 1 1 5B826D0E
+P 1000 7350
+F 0 "L2" V 950 7350 50  0000 C CNN
+F 1 "DNM" V 1075 7350 50  0000 C CNN
+F 2 "Inductor_SMD:L_0402_1005Metric" H 1000 7350 50  0001 C CNN
+F 3 "" H 1000 7350 50  0000 C CNN
+	1    1000 7350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 7500 1000 7550
+Connection ~ 1000 7200
+Wire Wire Line
+	1000 7200 900  7200
 $EndSCHEMATC

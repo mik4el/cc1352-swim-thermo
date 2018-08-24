@@ -248,7 +248,7 @@ F 3 "" H 11200 5350 50  0000 C CNN
 	1    11200 5350
 	1    0    0    -1  
 $EndComp
-Text Label 2900 5200 3    60   ~ 0
+Text Label 3000 5200 3    60   ~ 0
 PSU_ENABLE
 $Comp
 L Device:R R2
@@ -396,7 +396,7 @@ F 3 "" H 11000 3200 50  0000 C CNN
 $EndComp
 Text Label 10000 3750 0    60   ~ 0
 LED_EASYSET
-Text Label 3000 5200 3    60   ~ 0
+Text Label 2900 5200 3    60   ~ 0
 LED_EASYSET
 Text Notes 10350 3450 0    60   ~ 0
 For I=25mA
@@ -1082,10 +1082,6 @@ Connection ~ 7350 2100
 Wire Wire Line
 	7350 2100 7250 2100
 Wire Wire Line
-	5300 7200 5550 7200
-Wire Wire Line
-	5300 6350 5300 7200
-Wire Wire Line
 	5550 6350 5300 6350
 Wire Wire Line
 	6100 6350 5850 6350
@@ -1093,7 +1089,7 @@ Connection ~ 6150 7200
 Wire Wire Line
 	5850 7200 6150 7200
 Wire Wire Line
-	1150 7200 900  7200
+	1150 7200 1000 7200
 Text Notes 5450 7000 0    60   ~ 0
 Antenna matching
 Wire Notes Line
@@ -1671,17 +1667,6 @@ F 3 "" H 3150 7100 50  0001 C CNN
 	1    3150 7100
 	1    0    0    -1  
 $EndComp
-$Comp
-L power:GND #PWR0117
-U 1 1 5BDB499E
-P 4900 6800
-F 0 "#PWR0117" H 4900 6550 50  0001 C CNN
-F 1 "GND" H 4905 6627 50  0000 C CNN
-F 2 "" H 4900 6800 50  0001 C CNN
-F 3 "" H 4900 6800 50  0001 C CNN
-	1    4900 6800
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3250 6550 3250 6650
 Wire Wire Line
@@ -1695,11 +1680,6 @@ Wire Wire Line
 	3150 6950 3150 7100
 Wire Wire Line
 	4750 6550 4750 6650
-Wire Wire Line
-	4750 6800 4900 6800
-Wire Wire Line
-	4750 7200 5300 7200
-Connection ~ 5300 7200
 Wire Wire Line
 	4750 6950 4750 7200
 Wire Wire Line
@@ -1763,4 +1743,39 @@ NoConn ~ 3300 2600
 NoConn ~ 3400 2600
 NoConn ~ 3750 3300
 NoConn ~ 3100 5100
+NoConn ~ 4750 6800
+Wire Wire Line
+	5300 6350 5300 7200
+Connection ~ 5300 7200
+Wire Wire Line
+	4750 7200 5300 7200
+Wire Wire Line
+	5300 7200 5550 7200
+$Comp
+L power:GND #PWR?
+U 1 1 5B826D08
+P 1000 7550
+F 0 "#PWR?" H 1000 7300 50  0001 C CNN
+F 1 "GND" H 1000 7400 50  0000 C CNN
+F 2 "" H 1000 7550 50  0000 C CNN
+F 3 "" H 1000 7550 50  0000 C CNN
+	1    1000 7550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L L?
+U 1 1 5B826D0E
+P 1000 7350
+F 0 "L?" V 950 7350 50  0000 C CNN
+F 1 "DNM" V 1075 7350 50  0000 C CNN
+F 2 "Inductor_SMD:L_0402_1005Metric" H 1000 7350 50  0001 C CNN
+F 3 "" H 1000 7350 50  0000 C CNN
+	1    1000 7350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 7500 1000 7550
+Connection ~ 1000 7200
+Wire Wire Line
+	1000 7200 900  7200
 $EndSCHEMATC
