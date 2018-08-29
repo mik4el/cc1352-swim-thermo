@@ -31,11 +31,12 @@
  */
 
 /*
- *  ====================== CC1352R1_LAUNCHXL.c ===================================
+ *  ====================== CC1352R1_SWIMTHERMO.c ===================================
  *  This file is responsible for setting up the board specific items for the
- *  CC1352R1_LAUNCHXL board.
+ *  CC1352R1_SWIMTHERMO board.
  */
 
+#include <CC1352R1_SWIMTHERMO.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -45,15 +46,10 @@
 #include <ti/devices/cc13x2_cc26x2_v1/inc/hw_ints.h>
 #include <ti/devices/cc13x2_cc26x2_v1/inc/hw_memmap.h>
 
-#include "CC1352R1_LAUNCHXL.h"
-
-/*
- *  =============================== ADCBuf ===============================
- */
 #include <ti/drivers/ADCBuf.h>
 #include <ti/drivers/adcbuf/ADCBufCC26X2.h>
 
-ADCBufCC26X2_Object adcBufCC26xxObjects[CC1352R1_LAUNCHXL_ADCBUFCOUNT];
+ADCBufCC26X2_Object adcBufCC26xxObjects[CC1352R1_SWIMTHERMO_ADCBUFCOUNT];
 
 /*
  *  This table converts a virtual adc channel into a dio and internal analogue
@@ -62,7 +58,7 @@ ADCBufCC26X2_Object adcBufCC26xxObjects[CC1352R1_LAUNCHXL_ADCBUFCOUNT];
  *  pairs are hardwired. Do not remap them in the table. You may reorder entire
  *  entries. The mapping of dio and internal signals is package dependent.
  */
-const ADCBufCC26X2_AdcChannelLutEntry ADCBufCC26X2_adcChannelLut[CC1352R1_LAUNCHXL_ADCBUF0CHANNELCOUNT] = {
+const ADCBufCC26X2_AdcChannelLutEntry ADCBufCC26X2_adcChannelLut[CC1352R1_SWIMTHERMO_ADCBUF0CHANNELCOUNT] = {
     {CC1352R1_SWIMTHERMO_TAO_1, ADC_COMPB_IN_AUXIO7},
     {CC1352R1_SWIMTHERMO_TAO_2, ADC_COMPB_IN_AUXIO6},
     {PIN_UNASSIGNED, ADC_COMPB_IN_VDDS},
@@ -70,24 +66,24 @@ const ADCBufCC26X2_AdcChannelLutEntry ADCBufCC26X2_adcChannelLut[CC1352R1_LAUNCH
     {PIN_UNASSIGNED, ADC_COMPB_IN_VSS},
 };
 
-const ADCBufCC26X2_HWAttrs adcBufCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCBUFCOUNT] = {
+const ADCBufCC26X2_HWAttrs adcBufCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCBUFCOUNT] = {
     {
         .intPriority       = ~0,
         .swiPriority       = 0,
         .adcChannelLut     = ADCBufCC26X2_adcChannelLut,
-        .gpTimerUnit       = CC1352R1_LAUNCHXL_GPTIMER0A,
+        .gpTimerUnit       = CC1352R1_SWIMTHERMO_GPTIMER0A,
     }
 };
 
-const ADCBuf_Config ADCBuf_config[CC1352R1_LAUNCHXL_ADCBUFCOUNT] = {
+const ADCBuf_Config ADCBuf_config[CC1352R1_SWIMTHERMO_ADCBUFCOUNT] = {
     {
         &ADCBufCC26X2_fxnTable,
-        &adcBufCC26xxObjects[CC1352R1_LAUNCHXL_ADCBUF0],
-        &adcBufCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCBUF0]
+        &adcBufCC26xxObjects[CC1352R1_SWIMTHERMO_ADCBUF0],
+        &adcBufCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCBUF0]
     },
 };
 
-const uint_least8_t ADCBuf_count = CC1352R1_LAUNCHXL_ADCBUFCOUNT;
+const uint_least8_t ADCBuf_count = CC1352R1_SWIMTHERMO_ADCBUFCOUNT;
 
 /*
  *  =============================== ADC ===============================
@@ -95,9 +91,9 @@ const uint_least8_t ADCBuf_count = CC1352R1_LAUNCHXL_ADCBUFCOUNT;
 #include <ti/drivers/ADC.h>
 #include <ti/drivers/adc/ADCCC26XX.h>
 
-ADCCC26XX_Object adcCC26xxObjects[CC1352R1_LAUNCHXL_ADCCOUNT];
+ADCCC26XX_Object adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADCCOUNT];
 
-const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCCOUNT] = {
+const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCCOUNT] = {
     {
         .adcDIO              = CC1352R1_SWIMTHERMO_TAO_1,
         .adcCompBInput       = ADC_COMPB_IN_AUXIO7,
@@ -145,15 +141,15 @@ const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCCOUNT] = {
     }
 };
 
-const ADC_Config ADC_config[CC1352R1_LAUNCHXL_ADCCOUNT] = {
-    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_LAUNCHXL_ADC0], &adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADC0]},
-    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_LAUNCHXL_ADC1], &adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADC1]},
-    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_LAUNCHXL_ADCDCOUPL], &adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCDCOUPL]},
-    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_LAUNCHXL_ADCVSS], &adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCVSS]},
-    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_LAUNCHXL_ADCVDDS], &adcCC26xxHWAttrs[CC1352R1_LAUNCHXL_ADCVDDS]},
+const ADC_Config ADC_config[CC1352R1_SWIMTHERMO_ADCCOUNT] = {
+    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADC0], &adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADC0]},
+    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADC1], &adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADC1]},
+    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADCDCOUPL], &adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCDCOUPL]},
+    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADCVSS], &adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCVSS]},
+    {&ADCCC26XX_fxnTable, &adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADCVDDS], &adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCVDDS]},
 };
 
-const uint_least8_t ADC_count = CC1352R1_LAUNCHXL_ADCCOUNT;
+const uint_least8_t ADC_count = CC1352R1_SWIMTHERMO_ADCCOUNT;
 
 /*
  *  =============================== GPTimer ===============================
@@ -161,9 +157,9 @@ const uint_least8_t ADC_count = CC1352R1_LAUNCHXL_ADCCOUNT;
  */
 #include <ti/drivers/timer/GPTimerCC26XX.h>
 
-GPTimerCC26XX_Object gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMERCOUNT];
+GPTimerCC26XX_Object gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMERCOUNT];
 
-const GPTimerCC26XX_HWAttrs gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMERPARTSCOUNT] = {
+const GPTimerCC26XX_HWAttrs gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMERPARTSCOUNT] = {
     { .baseAddr = GPT0_BASE, .intNum = INT_GPT0A, .intPriority = (~0), .powerMngrId = PowerCC26XX_PERIPH_GPT0, .pinMux = GPT_PIN_0A, },
     { .baseAddr = GPT0_BASE, .intNum = INT_GPT0B, .intPriority = (~0), .powerMngrId = PowerCC26XX_PERIPH_GPT0, .pinMux = GPT_PIN_0B, },
     { .baseAddr = GPT1_BASE, .intNum = INT_GPT1A, .intPriority = (~0), .powerMngrId = PowerCC26XX_PERIPH_GPT1, .pinMux = GPT_PIN_1A, },
@@ -174,15 +170,15 @@ const GPTimerCC26XX_HWAttrs gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMERPARTSC
     { .baseAddr = GPT3_BASE, .intNum = INT_GPT3B, .intPriority = (~0), .powerMngrId = PowerCC26XX_PERIPH_GPT3, .pinMux = GPT_PIN_3B, },
 };
 
-const GPTimerCC26XX_Config GPTimerCC26XX_config[CC1352R1_LAUNCHXL_GPTIMERPARTSCOUNT] = {
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER0], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER0A], GPT_A },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER0], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER0B], GPT_B },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER1], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER1A], GPT_A },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER1], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER1B], GPT_B },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER2], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER2A], GPT_A },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER2], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER2B], GPT_B },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER3], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER3A], GPT_A },
-    { &gptimerCC26XXObjects[CC1352R1_LAUNCHXL_GPTIMER3], &gptimerCC26xxHWAttrs[CC1352R1_LAUNCHXL_GPTIMER3B], GPT_B },
+const GPTimerCC26XX_Config GPTimerCC26XX_config[CC1352R1_SWIMTHERMO_GPTIMERPARTSCOUNT] = {
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER0], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER0A], GPT_A },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER0], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER0B], GPT_B },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER1], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER1A], GPT_A },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER1], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER1B], GPT_B },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER2], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER2A], GPT_A },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER2], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER2B], GPT_B },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER3], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER3A], GPT_A },
+    { &gptimerCC26XXObjects[CC1352R1_SWIMTHERMO_GPTIMER3], &gptimerCC26xxHWAttrs[CC1352R1_SWIMTHERMO_GPTIMER3B], GPT_B },
 };
 
 /*
@@ -197,7 +193,6 @@ const PIN_Config BoardGpioInitTable[] = {
     CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL, /* T_ON_1 should be default high */
     CC1352R1_SWIMTHERMO_T_ON_2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_2 should be default low */
     CC1352R1_SWIMTHERMO_SWITCH | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_BOTHEDGES | PIN_HYSTERESIS,             /* Button is active low */
-    CC1352R1_LAUNCHXL_DIO30_RF_SUB1GHZ | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,  /* RF SW Switch defaults to 2.4GHz path */
     PIN_TERMINATE
 };
 
@@ -226,25 +221,10 @@ const PowerCC26X2_Config PowerCC26X2_config = {
  */
 #include <ti/drivers/rf/RF.h>
 
-/*
- *  Board-specific callback function to set the correct antenna path.
- *
- *  This function is called by the RF driver on global driver events.
- *  It contains a default implementation to set the correct antenna path.
- *  This function is defined in the file CC1352R1_LAUNCHXL_fxns.c
- */
-extern void rfDriverCallback(RF_Handle client, RF_GlobalEvent events, void *arg);
-
 const RFCC26XX_HWAttrsV2 RFCC26XX_hwAttrs = {
     .hwiPriority        = ~0,     /* Lowest HWI priority */
     .swiPriority        = 0,      /* Lowest SWI priority */
     .xoscHfAlwaysNeeded = true,   /* Keep XOSC dependency while in stanby */
-
-    /* Register the board specific callback */
-    .globalCallback     = &rfDriverCallback,
-
-    /* Subscribe the callback to both events */
-    .globalEventMask    = RF_GlobalEventRadioSetup | RF_GlobalEventRadioPowerDown
 };
 
 /*
@@ -253,14 +233,14 @@ const RFCC26XX_HWAttrsV2 RFCC26XX_hwAttrs = {
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/spi/SPICC26XXDMA.h>
 
-SPICC26XXDMA_Object spiCC26XXDMAObjects[CC1352R1_LAUNCHXL_SPICOUNT];
+SPICC26XXDMA_Object spiCC26XXDMAObjects[CC1352R1_SWIMTHERMO_SPICOUNT];
 
 /*
  * NOTE: The SPI instances below can be used by the SD driver to communicate
  * with a SD card via SPI.  The 'defaultTxBufValue' fields below are set to 0xFF
  * to satisfy the SDSPI driver requirement.
  */
-const SPICC26XXDMA_HWAttrsV1 spiCC26XXDMAHWAttrs[CC1352R1_LAUNCHXL_SPICOUNT] = {
+const SPICC26XXDMA_HWAttrsV1 spiCC26XXDMAHWAttrs[CC1352R1_SWIMTHERMO_SPICOUNT] = {
     {
         .baseAddr           = SSI0_BASE,
         .intNum             = INT_SSI0_COMB,
@@ -270,10 +250,10 @@ const SPICC26XXDMA_HWAttrsV1 spiCC26XXDMAHWAttrs[CC1352R1_LAUNCHXL_SPICOUNT] = {
         .defaultTxBufValue  = 0xFF,
         .rxChannelBitMask   = 1<<UDMA_CHAN_SSI0_RX,
         .txChannelBitMask   = 1<<UDMA_CHAN_SSI0_TX,
-        .mosiPin            = CC1352R1_LAUNCHXL_SPI0_MOSI,
-        .misoPin            = CC1352R1_LAUNCHXL_SPI0_MISO,
-        .clkPin             = CC1352R1_LAUNCHXL_SPI0_CLK,
-        .csnPin             = CC1352R1_LAUNCHXL_SPI0_CSN,
+        .mosiPin            = CC1352R1_SWIMTHERMO_SPI0_MOSI,
+        .misoPin            = CC1352R1_SWIMTHERMO_SPI0_MISO,
+        .clkPin             = CC1352R1_SWIMTHERMO_SPI0_CLK,
+        .csnPin             = CC1352R1_SWIMTHERMO_SPI0_CSN,
         .minDmaTransferSize = 10
     },
     {
@@ -285,37 +265,37 @@ const SPICC26XXDMA_HWAttrsV1 spiCC26XXDMAHWAttrs[CC1352R1_LAUNCHXL_SPICOUNT] = {
         .defaultTxBufValue  = 0xFF,
         .rxChannelBitMask   = 1<<UDMA_CHAN_SSI1_RX,
         .txChannelBitMask   = 1<<UDMA_CHAN_SSI1_TX,
-        .mosiPin            = CC1352R1_LAUNCHXL_SPI1_MOSI,
-        .misoPin            = CC1352R1_LAUNCHXL_SPI1_MISO,
-        .clkPin             = CC1352R1_LAUNCHXL_SPI1_CLK,
-        .csnPin             = CC1352R1_LAUNCHXL_SPI1_CSN,
+        .mosiPin            = CC1352R1_SWIMTHERMO_SPI1_MOSI,
+        .misoPin            = CC1352R1_SWIMTHERMO_SPI1_MISO,
+        .clkPin             = CC1352R1_SWIMTHERMO_SPI1_CLK,
+        .csnPin             = CC1352R1_SWIMTHERMO_SPI1_CSN,
         .minDmaTransferSize = 10
     }
 };
 
-const SPI_Config SPI_config[CC1352R1_LAUNCHXL_SPICOUNT] = {
+const SPI_Config SPI_config[CC1352R1_SWIMTHERMO_SPICOUNT] = {
     {
          .fxnTablePtr = &SPICC26XXDMA_fxnTable,
-         .object      = &spiCC26XXDMAObjects[CC1352R1_LAUNCHXL_SPI0],
-         .hwAttrs     = &spiCC26XXDMAHWAttrs[CC1352R1_LAUNCHXL_SPI0]
+         .object      = &spiCC26XXDMAObjects[CC1352R1_SWIMTHERMO_SPI0],
+         .hwAttrs     = &spiCC26XXDMAHWAttrs[CC1352R1_SWIMTHERMO_SPI0]
     },
     {
          .fxnTablePtr = &SPICC26XXDMA_fxnTable,
-         .object      = &spiCC26XXDMAObjects[CC1352R1_LAUNCHXL_SPI1],
-         .hwAttrs     = &spiCC26XXDMAHWAttrs[CC1352R1_LAUNCHXL_SPI1]
+         .object      = &spiCC26XXDMAObjects[CC1352R1_SWIMTHERMO_SPI1],
+         .hwAttrs     = &spiCC26XXDMAHWAttrs[CC1352R1_SWIMTHERMO_SPI1]
     },
 };
 
-const uint_least8_t SPI_count = CC1352R1_LAUNCHXL_SPICOUNT;
+const uint_least8_t SPI_count = CC1352R1_SWIMTHERMO_SPICOUNT;
 
 /*
  *  =============================== UDMA ===============================
  */
 #include <ti/drivers/dma/UDMACC26XX.h>
 
-UDMACC26XX_Object udmaObjects[CC1352R1_LAUNCHXL_UDMACOUNT];
+UDMACC26XX_Object udmaObjects[CC1352R1_SWIMTHERMO_UDMACOUNT];
 
-const UDMACC26XX_HWAttrs udmaHWAttrs[CC1352R1_LAUNCHXL_UDMACOUNT] = {
+const UDMACC26XX_HWAttrs udmaHWAttrs[CC1352R1_SWIMTHERMO_UDMACOUNT] = {
     {
         .baseAddr    = UDMA0_BASE,
         .powerMngrId = PowerCC26XX_PERIPH_UDMA,
@@ -324,23 +304,23 @@ const UDMACC26XX_HWAttrs udmaHWAttrs[CC1352R1_LAUNCHXL_UDMACOUNT] = {
     }
 };
 
-const UDMACC26XX_Config UDMACC26XX_config[CC1352R1_LAUNCHXL_UDMACOUNT] = {
+const UDMACC26XX_Config UDMACC26XX_config[CC1352R1_SWIMTHERMO_UDMACOUNT] = {
     {
-         .object  = &udmaObjects[CC1352R1_LAUNCHXL_UDMA0],
-         .hwAttrs = &udmaHWAttrs[CC1352R1_LAUNCHXL_UDMA0]
+         .object  = &udmaObjects[CC1352R1_SWIMTHERMO_UDMA0],
+         .hwAttrs = &udmaHWAttrs[CC1352R1_SWIMTHERMO_UDMA0]
     },
 };
 
 /*
  *  Board-specific initialization function to disable external flash.
- *  This function is defined in the file CC1352R1_LAUNCHXL_fxns.c
+ *  This function is defined in the file CC1352R1_SWIMTHERMO_fxns.c
  */
 extern void Board_initHook(void);
 
 /*
- *  ======== CC1352R1_LAUNCHXL_initGeneral ========
+ *  ======== CC1352R1_SWIMTHERMO_initGeneral ========
  */
-void CC1352R1_LAUNCHXL_initGeneral(void)
+void CC1352R1_SWIMTHERMO_initGeneral(void)
 {
     Power_init();
 

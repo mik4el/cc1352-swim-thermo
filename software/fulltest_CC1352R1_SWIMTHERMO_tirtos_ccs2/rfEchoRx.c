@@ -177,7 +177,6 @@ static PIN_State pinState;
  */
 
 PIN_Config pinTable[] = {
-                         Board_DIO30_RFSW | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,
                          CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL, /* T_ON_1 should be default high */
                          CC1352R1_SWIMTHERMO_T_ON_2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_2 should be default low */
                          CC1352R1_SWIMTHERMO_SWITCH  | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
@@ -212,7 +211,7 @@ void readLMT70()
     uint32_t     high_res;
 
     ADC_Params_init(&params);
-    adc = ADC_open(CC1352R1_LAUNCHXL_ADC0, &params);
+    adc = ADC_open(CC1352R1_SWIMTHERMO_ADC0, &params);
 
     if (adc == NULL) {
         printf("Error initializing ADC channel 0\n");
@@ -231,7 +230,7 @@ void readLMT70()
 
     ADC_close(adc);
 
-    adc = ADC_open(CC1352R1_LAUNCHXL_ADC1, &params);
+    adc = ADC_open(CC1352R1_SWIMTHERMO_ADC1, &params);
 
     if (adc == NULL) {
         printf("Error initializing ADC channel 1\n");
@@ -364,7 +363,7 @@ void led_breathe() {
     spiParams.frameFormat = SPI_TI;
     spiParams.bitRate = 1000000; // fails around 3 Mbps
     spiParams.dataSize = 4;
-    masterSpi = SPI_open(CC1352R1_LAUNCHXL_SPI0, &spiParams);
+    masterSpi = SPI_open(CC1352R1_SWIMTHERMO_SPI0, &spiParams);
     if (masterSpi == NULL) {
         printf("Error initializing master SPI\n");
         while (1);

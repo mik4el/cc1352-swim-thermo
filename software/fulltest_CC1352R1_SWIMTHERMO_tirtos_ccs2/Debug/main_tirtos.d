@@ -81,7 +81,7 @@ main_tirtos.obj: /Applications/ti/xdctools_3_50_07_20_core/packages/xdc/runtime/
 main_tirtos.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/kernel/tirtos/packages/ti/sysbios/BIOS__epilogue.h
 main_tirtos.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/kernel/tirtos/packages/ti/sysbios/package/BIOS_RtsGateProxy.h
 main_tirtos.obj: ../Board.h
-main_tirtos.obj: ../CC1352R1_LAUNCHXL.h
+main_tirtos.obj: ../CC1352R1_SWIMTHERMO.h
 main_tirtos.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/PIN.h
 main_tirtos.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdbool.h
 main_tirtos.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/ioc.h
@@ -180,7 +180,7 @@ main_tirtos.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/dev
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/kernel/tirtos/packages/ti/sysbios/BIOS__epilogue.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/kernel/tirtos/packages/ti/sysbios/package/BIOS_RtsGateProxy.h: 
 ../Board.h: 
-../CC1352R1_LAUNCHXL.h: 
+../CC1352R1_SWIMTHERMO.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/PIN.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdbool.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/ioc.h: 

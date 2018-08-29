@@ -31,7 +31,7 @@
  */
 
 /*
- *  ======== CC1352R1_LAUNCHXL.cmd ========
+ *  ======== CC1352R1_SWIMTHERMO.cmd ========
  */
 
 --stack_size=1024   /* C stack is also used for ISR stack */

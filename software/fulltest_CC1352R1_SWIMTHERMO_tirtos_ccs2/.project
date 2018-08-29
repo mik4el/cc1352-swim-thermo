@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>fulltest_CC1352R1_LAUNCHXL_tirtos_ccs2</name>
+	<name>fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs2</name>
 	<comment></comment>
 	<projects>
 		<project>tirtos_builds_CC1352R1_LAUNCHXL_release_ccs</project>

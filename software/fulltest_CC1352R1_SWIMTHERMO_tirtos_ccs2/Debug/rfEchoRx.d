@@ -58,7 +58,7 @@ rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/ccs/unistd.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_mailbox.h
 rfEchoRx.obj: ../Board.h
-rfEchoRx.obj: ../CC1352R1_LAUNCHXL.h
+rfEchoRx.obj: ../CC1352R1_SWIMTHERMO.h
 rfEchoRx.obj: ../RFQueue.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_data_entry.h
 rfEchoRx.obj: ../smartrf_settings/smartrf_settings.h
@@ -121,7 +121,7 @@ rfEchoRx.obj: ../smartrf_settings/smartrf_settings.h
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/ccs/unistd.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_mailbox.h: 
 ../Board.h: 
-../CC1352R1_LAUNCHXL.h: 
+../CC1352R1_SWIMTHERMO.h: 
 ../RFQueue.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_data_entry.h: 
 ../smartrf_settings/smartrf_settings.h: 
