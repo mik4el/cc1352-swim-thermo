@@ -597,6 +597,7 @@ void *mainThread(void *arg0)
 
 static void echoCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
+    printf("Echo\n");
     if (e & RF_EventRxEntryDone)
     {
         /* Successful RX */
@@ -604,21 +605,21 @@ static void echoCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 
         printf("Successful RX %i\n", rxCount);
 
-        /* Get current unhandled data entry */
-        currentDataEntry = RFQueue_getDataEntry();
-
-        /* Handle the packet data, located at &currentDataEntry->data:
-         * - Length is the first byte with the current configuration
-         * - Data starts from the second byte */
-        packetLength      = *(uint8_t *)(&(currentDataEntry->data));
-        packetDataPointer = (uint8_t *)(&(currentDataEntry->data) + 1);
-
-        /* Copy the payload + status byte to the rxPacket variable, and then
-         * over to the txPacket
-         */
-        memcpy(txPacket, packetDataPointer, packetLength);
-
-        RFQueue_nextEntry();
+//        /* Get current unhandled data entry */
+//        currentDataEntry = RFQueue_getDataEntry();
+//
+//        /* Handle the packet data, located at &currentDataEntry->data:
+//         * - Length is the first byte with the current configuration
+//         * - Data starts from the second byte */
+//        packetLength      = *(uint8_t *)(&(currentDataEntry->data));
+//        packetDataPointer = (uint8_t *)(&(currentDataEntry->data) + 1);
+//
+//        /* Copy the payload + status byte to the rxPacket variable, and then
+//         * over to the txPacket
+//         */
+//        memcpy(txPacket, packetDataPointer, packetLength);
+//
+//        RFQueue_nextEntry();
     }
     else if (e & RF_EventLastCmdDone)
     {
