@@ -32,6 +32,7 @@
 
 /***** Includes *****/
 /* Standard C Libraries */
+#include <smartrf_settings/14dbm_smartrf_settings.h.old>
 #include <stdlib.h>
 
 /* TI Drivers */
@@ -46,7 +47,6 @@
 
 /* Application Header files */ 
 #include "RFQueue.h"
-#include "smartrf_settings/smartrf_settings.h"
 
 /***** Defines *****/
 /* Packet RX/TX Configuration */

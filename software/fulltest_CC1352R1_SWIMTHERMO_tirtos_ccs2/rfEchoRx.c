@@ -47,6 +47,7 @@
 
 /* POSIX Header files */
 #include <pthread.h>
+#include <smartrf_settings/14dbm_smartrf_settings.h.old>
 #include <unistd.h>
 
 /* Driverlib Header files */
@@ -57,7 +58,6 @@
 
 /* Application Header files */ 
 #include "RFQueue.h"
-#include "smartrf_settings/smartrf_settings.h"
 
 #define THREADSTACKSIZE (1024)
 

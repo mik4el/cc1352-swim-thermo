@@ -152,7 +152,7 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs.out"
 
 dependents:
-	-cd /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug && $(MAKE) clean all
+	-cd /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug && $(MAKE) all
 
 # Tool invocations
 rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.lib

@@ -55,13 +55,13 @@ rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/includ
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/../include/sys/timespec.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/_timespec.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/ccs/sched.h
+rfEchoRx.obj: /Users/mikael/Code/cc1352-swim-thermo/software/fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs2/smartrf_settings/14dbm_smartrf_settings.h.old
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/ccs/unistd.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_mailbox.h
 rfEchoRx.obj: ../Board.h
 rfEchoRx.obj: ../CC1352R1_SWIMTHERMO.h
 rfEchoRx.obj: ../RFQueue.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_data_entry.h
-rfEchoRx.obj: ../smartrf_settings/smartrf_settings.h
 
 ../rfEchoRx.c: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdlib.h: 
@@ -118,10 +118,10 @@ rfEchoRx.obj: ../smartrf_settings/smartrf_settings.h
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/../include/sys/timespec.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/_timespec.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/ccs/sched.h: 
+/Users/mikael/Code/cc1352-swim-thermo/software/fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs2/smartrf_settings/14dbm_smartrf_settings.h.old: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/posix/ccs/unistd.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_mailbox.h: 
 ../Board.h: 
 ../CC1352R1_SWIMTHERMO.h: 
 ../RFQueue.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_data_entry.h: 
-../smartrf_settings/smartrf_settings.h: 

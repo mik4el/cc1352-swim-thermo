@@ -21,11 +21,11 @@ smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_
 smartrf_settings/smartrf_settings.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stddef.h
 smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/dpl/SemaphoreP.h
 smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_ble_cmd.h
-smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_cpe_multi_protocol.h
-smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_mce_genfsk.h
+smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_cpe_prop.h
+smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_rfe_genfsk.h
 smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/../inc/hw_types.h
 smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/../inc/../inc/hw_chip_def.h
-smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_rfe_genfsk.h
+smartrf_settings/smartrf_settings.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_mce_sl_longrange.h
 smartrf_settings/smartrf_settings.obj: ../smartrf_settings/smartrf_settings.h
 
 ../smartrf_settings/smartrf_settings.c: 
@@ -49,9 +49,9 @@ smartrf_settings/smartrf_settings.obj: ../smartrf_settings/smartrf_settings.h
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stddef.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/dpl/SemaphoreP.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_ble_cmd.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_cpe_multi_protocol.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_mce_genfsk.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_cpe_prop.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_rfe_genfsk.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/../inc/hw_types.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/../inc/../inc/hw_chip_def.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_rfe_genfsk.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/rf_patches/rf_patch_mce_sl_longrange.h: 
 ../smartrf_settings/smartrf_settings.h: 
