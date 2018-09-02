@@ -4,8 +4,8 @@ This project tries to create a high-accuracy swim thermometer broadcasting senso
 Requires Code Composer Studio (CCS) v8 for software and Kicad for hardware. Software is programmed using the CC1352 Launchpad.
 
 ## Known issues:
-Has a hardware issue that makes the max TX power to be 10dBm caused by poor and non reference design following decoupling capacitor placement and power plane layout.
-Using wrong GPIOs for analog sensing. 
-All in all it needs a revision for lots of small thing but at least the proof of concept is done.
+1. Has a hardware issue that makes the max TX power to be 10dBm caused by poor and non reference design following decoupling capacitor placement and power plane layout.
+1. Using wrong GPIOs for analog sensing. 
+1. All in all it needs a revision for lots of small thing but at least the proof of concept is done.
 
 ![alt text](https://github.com/mik4el/cc1352-swim-thermo/raw/master/cc1352v1.JPG)
