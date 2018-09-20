@@ -33,10 +33,15 @@
 /***** Includes *****/
 /* Standard C Libraries */
 #include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
 
 /* TI Drivers */
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/PIN.h>
+
+/* Display Header files */
+#include <ti/display/Display.h>
 
 /* Driverlib Header files */
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
@@ -105,6 +110,8 @@ static uint8_t* packetDataPointer;
 
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
 
+Display_Handle hLcd;
+
 /*
  * Application LED pin configuration table:
  *   - All LEDs board LEDs are off.
@@ -122,6 +129,21 @@ PIN_Config pinTable[] =
 
 void *mainThread(void *arg0)
 {
+    Display_init();
+
+    /* Initialize display and try to open both UART and LCD types of display. */
+    Display_Params params;
+    Display_Params_init(&params);
+    params.lineClearMode = DISPLAY_CLEAR_BOTH;
+
+    hLcd = Display_open(Display_Type_LCD, &params);
+
+    Display_clear(hLcd);
+    Display_printf(hLcd, 3, 3, "Packet RX");
+    sleep(2);
+    Display_clear(hLcd);
+    Display_printf(hLcd, 0, 0, "Waiting...");
+
     RF_Params rfParams;
     RF_Params_init(&rfParams);
 
@@ -250,12 +272,12 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
     if (e & RF_EventRxEntryDone)
     {
-        /* Toggle pin to indicate RX */
+        /* Indicate RX */
         PIN_setOutputValue(ledPinHandle, Board_PIN_LED2,
                            !PIN_getOutputValue(Board_PIN_LED2));
 
-        printf("Successful Echo\n");
-
+        Display_clear(hLcd);
+        Display_printf(hLcd, 0, 0, "Received!");
 
         /* Get current unhandled data entry */
         currentDataEntry = RFQueue_getDataEntry();
