@@ -32,6 +32,7 @@
 
 /***** Includes *****/
 /* Standard C Libraries */
+#include <smartrf_settings/smartrf_settings.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -39,6 +40,11 @@
 /* TI Drivers */
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/PIN.h>
+
+/* Threading */
+#include <pthread.h>
+#include <unistd.h>
+#define THREADSTACKSIZE (1024)
 
 /* Display Header files */
 #include <ti/display/Display.h>
@@ -51,7 +57,9 @@
 
 /* Application Header files */
 #include "RFQueue.h"
-#include "smartrf_settings/smartrf_settings.h"
+
+/* Time */
+#include <ti/sysbios/hal/Seconds.h>
 
 /***** Defines *****/
 
@@ -109,9 +117,8 @@ static uint8_t* packetDataPointer;
 
 
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
-
-Display_Handle hLcd;
-
+int rx_n = 0;
+uint32_t rx_timestamp_ms = 0;
 /*
  * Application LED pin configuration table:
  *   - All LEDs board LEDs are off.
@@ -127,12 +134,14 @@ PIN_Config pinTable[] =
 
 /***** Function definitions *****/
 
-void *mainThread(void *arg0)
+void *displayThread(void *arg0)
 {
+    Display_Handle hLcd;
+    Display_Params params;
+
     Display_init();
 
     /* Initialize display and try to open both UART and LCD types of display. */
-    Display_Params params;
     Display_Params_init(&params);
     params.lineClearMode = DISPLAY_CLEAR_BOTH;
 
@@ -142,7 +151,59 @@ void *mainThread(void *arg0)
     Display_printf(hLcd, 3, 3, "Packet RX");
     sleep(2);
     Display_clear(hLcd);
-    Display_printf(hLcd, 0, 0, "Waiting...");
+
+    Seconds_set(0);
+
+    uint32_t delta_t = 0;
+    while(1) {
+        Display_printf(hLcd, 0, 0, "Packet RX");
+        if (rx_n > 0) {
+            delta_t = ti_sysbios_hal_Seconds_get() - rx_timestamp_ms;
+            Display_printf(hLcd, 2, 0, "rx_n: %i", rx_n);
+            if (delta_t > 1) {
+                Display_printf(hLcd, 3, 0, "time: %is", delta_t);
+            } else {
+                Display_printf(hLcd, 3, 0, "time: ...");
+            }
+        }
+    }
+}
+
+
+void *mainThread(void *arg0)
+{
+    /* Create application threads */
+    pthread_t           thread0;
+    pthread_attr_t      attrs;
+    struct sched_param  priParam;
+    int                 retc;
+    int                 detachState;
+
+    pthread_attr_init(&attrs);
+
+    detachState = PTHREAD_CREATE_DETACHED;
+    /* Set priority and stack size attributes */
+    retc = pthread_attr_setdetachstate(&attrs, detachState);
+    if (retc != 0) {
+        /* pthread_attr_setdetachstate() failed */
+        while (1);
+    }
+
+    retc |= pthread_attr_setstacksize(&attrs, THREADSTACKSIZE);
+    if (retc != 0) {
+        /* pthread_attr_setstacksize() failed */
+        while (1);
+    }
+
+    /* Create displayThread thread */
+    priParam.sched_priority = 1;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&thread0, &attrs, displayThread, NULL);
+    if (retc != 0) {
+        /* pthread_create() failed */
+        while (1);
+    }
 
     RF_Params rfParams;
     RF_Params_init(&rfParams);
@@ -266,6 +327,7 @@ void *mainThread(void *arg0)
     }
 
     while(1);
+
 }
 
 void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
@@ -276,8 +338,8 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         PIN_setOutputValue(ledPinHandle, Board_PIN_LED2,
                            !PIN_getOutputValue(Board_PIN_LED2));
 
-        Display_clear(hLcd);
-        Display_printf(hLcd, 0, 0, "Received!");
+        rx_n += 1;
+        rx_timestamp_ms = ti_sysbios_hal_Seconds_get();
 
         /* Get current unhandled data entry */
         currentDataEntry = RFQueue_getDataEntry();

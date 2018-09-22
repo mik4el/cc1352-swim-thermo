@@ -47,7 +47,6 @@
 
 /* POSIX Header files */
 #include <pthread.h>
-#include <smartrf_settings/14dbm_smartrf_settings.h.old>
 #include <unistd.h>
 
 /* Driverlib Header files */

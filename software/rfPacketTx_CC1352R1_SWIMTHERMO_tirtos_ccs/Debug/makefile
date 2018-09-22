@@ -134,37 +134,37 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.out \
+rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.out \
 
 EXE_OUTPUTS__QUOTED += \
-"rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.out" \
+"rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.out" \
 
 BIN_OUTPUTS += \
-rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.hex \
+rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.hex" \
+"rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.out"
+	@$(MAKE) --no-print-directory -Onone "rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.out"
 
 dependents:
 	-cd /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug && $(MAKE) clean all
 
 # Tool invocations
-rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.lib
+rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.lib
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=DeviceFamily_CC13X2 --define=CCFG_FORCE_VDDR_HH=1 -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.map" -i"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs_linkInfo.xml" --rom_model -o "rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.out" $(ORDERED_OBJS)
+	"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=DeviceFamily_CC13X2 --define=CCFG_FORCE_VDDR_HH=0 -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.map" -i"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs_linkInfo.xml" --rom_model -o "rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.hex: $(EXE_OUTPUTS)
+rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armhex"  -o "rfPacketTx_CC1352R1_LAUNCHXL_tirtos_ccs.hex" $(EXE_OUTPUTS__QUOTED)
+	"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armhex"  -o "rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 

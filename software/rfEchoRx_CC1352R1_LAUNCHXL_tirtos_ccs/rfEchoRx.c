@@ -32,7 +32,6 @@
 
 /***** Includes *****/
 /* Standard C Libraries */
-#include <smartrf_settings/14dbm_smartrf_settings.h.old>
 #include <stdlib.h>
 
 /* TI Drivers */
