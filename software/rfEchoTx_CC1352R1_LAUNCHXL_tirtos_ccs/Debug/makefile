@@ -152,13 +152,13 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.out"
 
 dependents:
-	-cd /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug && $(MAKE) clean all
+	-cd /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug && $(MAKE) all
 
 # Tool invocations
 rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS) /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.lib
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=DeviceFamily_CC13X2 --define=CCFG_FORCE_VDDR_HH=0 -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.map" -i"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs_linkInfo.xml" --rom_model -o "rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.out" $(ORDERED_OBJS)
+	"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=DeviceFamily_CC13X2 --define=CCFG_FORCE_VDDR_HH=1 -g --diag_warning=225 --diag_warning=255 --diag_wrap=off --display_error_number --gen_func_subsections=on -z -m"rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.map" -i"/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/lib" --diag_wrap=off --display_error_number --warn_sections --xml_link_info="rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs_linkInfo.xml" --rom_model -o "rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 

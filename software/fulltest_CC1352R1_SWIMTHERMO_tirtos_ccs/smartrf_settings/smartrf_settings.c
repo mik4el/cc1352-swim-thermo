@@ -13,7 +13,7 @@
 // Address1: 0xBB 
 // Frequency: 868.00000 MHz
 // Data Format: Serial mode disable 
-// Deviation: 25.000 kHz
+// Deviation: 5.000 kHz
 // pktLen: 30 
 // 802.15.4g Mode: 0 
 // Select bit order to transmit PSDU octets:: 1 
@@ -21,10 +21,10 @@
 // Max Packet Length: 128 
 // Packet Length: 20 
 // Packet Data: 255 
-// RX Filter BW: 98.0 kHz
-// Symbol Rate: 50.00000 kBaud
+// RX Filter BW: 34.1 kHz
+// Symbol Rate: 19.99969 kBaud
 // Sync Word Length: 32 Bits 
-// TX Power: 0 dBm (requires define CCFG_FORCE_VDDR_HH = 0 in ccfg.c, see CC13xx/CC26xx Technical Reference Manual)
+// TX Power: 14 dBm (requires define CCFG_FORCE_VDDR_HH = 0 in ccfg.c, see CC13xx/CC26xx Technical Reference Manual)
 // Whitening: No whitening 
 
 #include <ti/devices/DeviceFamily.h>
@@ -34,7 +34,7 @@
 #include <ti/drivers/rf/RF.h>
 #include DeviceFamily_constructPath(rf_patches/rf_patch_cpe_prop.h)
 #include DeviceFamily_constructPath(rf_patches/rf_patch_rfe_genfsk.h)
-#include DeviceFamily_constructPath(rf_patches/rf_patch_mce_genfsk.h)
+#include DeviceFamily_constructPath(rf_patches/rf_patch_mce_sl_longrange.h)
 #include "smartrf_settings.h"
 
 
@@ -43,7 +43,7 @@ RF_Mode RF_prop =
 {
     .rfMode = RF_MODE_AUTO,
     .cpePatchFxn = &rf_patch_cpe_prop,
-    .mcePatchFxn = &rf_patch_mce_genfsk,
+    .mcePatchFxn = &rf_patch_mce_sl_longrange,
     .rfePatchFxn = &rf_patch_rfe_genfsk,
 };
 
@@ -80,9 +80,11 @@ RF_TxPowerTable_Entry txPowerTable[] =
 // Overrides for CMD_PROP_RADIO_DIV_SETUP
 uint32_t pOverrides[] =
 {
-    // override_use_patch_prop_genfsk.xml
+    // override_use_patch_simplelink_long_range.xml
     // PHY: Use MCE RAM patch, RFE RAM patch
     MCE_RFE_OVERRIDE(1,0,0,1,0,0),
+    // PHY: Use MCE RAM patch only for Rx (0xE), use MCE ROM bank 6 for Tx (0x6)
+    (uint32_t)0x006E88E3,
     // override_synth_prop_863_930_div5.xml
     // Synth: Use 48 MHz crystal as synth clock, enable extra PLL filtering
     (uint32_t)0x02400403,
@@ -114,26 +116,30 @@ uint32_t pOverrides[] =
     (uint32_t)0x7AB80603,
     // Synth: Set loop bandwidth after lock to 20 kHz
     (uint32_t)0x00000623,
-    // override_phy_tx_pa_ramp_genfsk.xml
-    // Tx: Configure PA ramping, set wait time before turning off (0x1F ticks of 16/24 us = 20.7 us).
-    HW_REG_OVERRIDE(0x6028,0x001F),
-    // Tx: Configure PA ramp time, PACTL2.RC=0x3 (in ADI0, set PACTL2[3]=1)
-    ADI_HALFREG_OVERRIDE(0,16,0x8,0x8),
-    // Tx: Configure PA ramp time, PACTL2.RC=0x3 (in ADI0, set PACTL2[4]=1)
-    ADI_HALFREG_OVERRIDE(0,17,0x1,0x1),
-    // override_phy_rx_frontend_genfsk.xml
-    // Rx: Set AGC reference level to 0x1A (default: 0x2E)
-    HW_REG_OVERRIDE(0x609C,0x001A),
-    // Rx: Set LNA bias current offset to adjust +1 (default: 0)
-    (uint32_t)0x00018883,
+    // override_phy_simplelink_long_range_dsss4.xml
+    // PHY: Configure DSSS SF=4 for payload data
+    HW_REG_OVERRIDE(0x5068,0x030C),
+    // PHY: Set SimpleLink Long Range bit-inverted sync word pattern (uncoded, before spreading to fixed-size 64-bit pattern): 0x146F
+    HW_REG_OVERRIDE(0x5128,0x146F),
+    // PHY: Set SimpleLink Long Range sync word pattern (uncoded, before spreading to fixed-size 64-bit pattern): 0xEB90
+    HW_REG_OVERRIDE(0x512C,0xEB90),
+    // PHY: Reduce demodulator correlator threshold for improved Rx sensitivity
+    HW_REG_OVERRIDE(0x5124,0x362E),
+    // PHY: Reduce demodulator correlator threshold for improved Rx sensitivity
+    HW_REG_OVERRIDE(0x5118,0x004C),
+    // PHY: Configure limit on frequency offset compensation tracker
+    HW_REG_OVERRIDE(0x5140,0x3E05),
+    // override_phy_rx_frontend_simplelink_long_range.xml
     // Rx: Set RSSI offset to adjust reported RSSI by -2 dB (default: 0)
     (uint32_t)0x000288A3,
     // override_phy_rx_aaf_bw_0xd.xml
     // Rx: Set anti-aliasing filter bandwidth to 0xD (in ADI0, set IFAMPCTL3[7:4]=0xD)
     ADI_HALFREG_OVERRIDE(0,61,0xF,0xD),
     // TX power override
-    // DC/DC regulator: In Tx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4). In Rx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4).
-    (uint32_t)0xFCFC08C3,
+    // DC/DC regulator: In Tx with 14 dBm PA setting, use DCDCCTL5[3:0]=0xF (DITHER_EN=1 and IPEAK=7). In Rx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4).
+    (uint32_t)0xFFFC08C3,
+    // Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)
+    ADI_REG_OVERRIDE(0,12,0xF8),
     (uint32_t)0xFFFFFFFF,
 };
 
@@ -153,24 +159,24 @@ rfc_CMD_PROP_RADIO_DIV_SETUP_t RF_cmdPropRadioDivSetup =
     .condition.rule = 0x1,
     .condition.nSkip = 0x0,
     .modulation.modType = 0x1,
-    .modulation.deviation = 0x64,
+    .modulation.deviation = 0x14,
     .modulation.deviationStepSz = 0x0,
     .symbolRate.preScale = 0xF,
-    .symbolRate.rateWord = 0x8000,
+    .symbolRate.rateWord = 0x3333,
     .symbolRate.decimMode = 0x0,
-    .rxBw = 0x52,
-    .preamConf.nPreamBytes = 0x4,
+    .rxBw = 0x4C,
+    .preamConf.nPreamBytes = 0x2,
     .preamConf.preamMode = 0x0,
     .formatConf.nSwBits = 0x20,
     .formatConf.bBitReversal = 0x0,
-    .formatConf.bMsbFirst = 0x1,
-    .formatConf.fecMode = 0x0,
+    .formatConf.bMsbFirst = 0x0,
+    .formatConf.fecMode = 0x8,
     .formatConf.whitenMode = 0x0,
     .config.frontEndMode = 0x0,
     .config.biasMode = 0x1,
     .config.analogCfgMode = 0x0,
     .config.bNoFsPowerUp = 0x0,
-    .txPower = 0x0EC8,
+    .txPower = 0x9F3F,
     .pRegOverride = pOverrides,
     .centerFreq = 0x0364,
     .intFreq = 0x8000,
@@ -201,6 +207,31 @@ rfc_CMD_FS_t RF_cmdFs =
     .__dummy3 = 0x0000,
 };
 
+// CMD_RX_TEST
+// Receiver Test Command
+rfc_CMD_RX_TEST_t RF_cmdRxTest =
+{
+    .commandNo = 0x0807,
+    .status = 0x0000,
+    .pNextOp = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
+    .startTime = 0x00000000,
+    .startTrigger.triggerType = 0x0,
+    .startTrigger.bEnaCmd = 0x0,
+    .startTrigger.triggerNo = 0x0,
+    .startTrigger.pastTrig = 0x0,
+    .condition.rule = 0x1,
+    .condition.nSkip = 0x0,
+    .config.bEnaFifo = 0x0,
+    .config.bFsOff = 0x0,
+    .config.bNoSync = 0x1,
+    .endTrigger.triggerType = 0x1,
+    .endTrigger.bEnaCmd = 0x0,
+    .endTrigger.triggerNo = 0x0,
+    .endTrigger.pastTrig = 0x0,
+    .syncWord = 0x00000000,
+    .endTime = 0x00000000,
+};
+
 // CMD_PROP_TX
 // Proprietary Mode Transmit Command
 rfc_CMD_PROP_TX_t RF_cmdPropTx =
@@ -218,7 +249,7 @@ rfc_CMD_PROP_TX_t RF_cmdPropTx =
     .pktConf.bFsOff = 0x0,
     .pktConf.bUseCrc = 0x1,
     .pktConf.bVarLen = 0x1,
-    .pktLen = 0x14,
+    .pktLen = 0x1E, // SET APPLICATION PAYLOAD LENGTH
     .syncWord = 0x930B51DE,
     .pPkt = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
 };
@@ -253,7 +284,7 @@ rfc_CMD_PROP_RX_t RF_cmdPropRx =
     .rxConf.bAppendTimestamp = 0x0,
     .rxConf.bAppendStatus = 0x1,
     .syncWord = 0x930B51DE,
-    .maxPktLen = 0x80,
+    .maxPktLen = 0xFF, // MAKE SURE DATA ENTRY IS LARGE ENOUGH
     .address0 = 0xAA,
     .address1 = 0xBB,
     .endTrigger.triggerType = 0x1,
@@ -264,3 +295,4 @@ rfc_CMD_PROP_RX_t RF_cmdPropRx =
     .pQueue = 0, // INSERT APPLICABLE POINTER: (dataQueue_t*)&xxx
     .pOutput = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
 };
+

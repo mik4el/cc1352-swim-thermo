@@ -1,28 +1,27 @@
 # FIXED
 
 rfEchoRx.obj: ../rfEchoRx.c
-rfEchoRx.obj: /Users/mikael/Code/cc1352-swim-thermo/software/rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs/smartrf_settings/14dbm_smartrf_settings.h.old
-rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/DeviceFamily.h
-rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_mailbox.h
+rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdlib.h
+rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h
+rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h
+rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/cdefs.h
+rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/rf/RF.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdint.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/stdint.h
-rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/cdefs.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/_types.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/machine/_types.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/machine/_stdint.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/_stdint.h
-rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/string.h
-rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h
-rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h
-rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_common_cmd.h
-rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_cmd.h
-rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/rf/RF.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdbool.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/dpl/ClockP.h
 rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stddef.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/dpl/SemaphoreP.h
+rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/DeviceFamily.h
+rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_common_cmd.h
+rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_mailbox.h
+rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/string.h
+rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_cmd.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_ble_cmd.h
-rfEchoRx.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdlib.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/PIN.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_mailbox.h
 rfEchoRx.obj: ../Board.h
@@ -43,30 +42,30 @@ rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/device
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/../inc/hw_gpio.h
 rfEchoRx.obj: ../RFQueue.h
 rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_data_entry.h
+rfEchoRx.obj: ../smartrf_settings/smartrf_settings.h
 
 ../rfEchoRx.c: 
-/Users/mikael/Code/cc1352-swim-thermo/software/rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs/smartrf_settings/14dbm_smartrf_settings.h.old: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/DeviceFamily.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_mailbox.h: 
+/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdlib.h: 
+/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h: 
+/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h: 
+/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/cdefs.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/rf/RF.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdint.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/stdint.h: 
-/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/cdefs.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/_types.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/machine/_types.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/machine/_stdint.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/sys/_stdint.h: 
-/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/string.h: 
-/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h: 
-/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_common_cmd.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_cmd.h: 
-/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/rf/RF.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdbool.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/dpl/ClockP.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stddef.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/dpl/SemaphoreP.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/DeviceFamily.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_common_cmd.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_mailbox.h: 
+/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/string.h: 
+/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_cmd.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_ble_cmd.h: 
-/Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdlib.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/PIN.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_prop_mailbox.h: 
 ../Board.h: 
@@ -87,3 +86,4 @@ rfEchoRx.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/device
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/../inc/hw_gpio.h: 
 ../RFQueue.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/devices/cc13x2_cc26x2_v1/driverlib/rf_data_entry.h: 
+../smartrf_settings/smartrf_settings.h: 

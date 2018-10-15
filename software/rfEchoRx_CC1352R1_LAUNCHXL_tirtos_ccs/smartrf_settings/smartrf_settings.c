@@ -19,12 +19,12 @@
 // Select bit order to transmit PSDU octets:: 1 
 // Packet Length Config: Variable 
 // Max Packet Length: 255 
-// Packet Length: 20 
+// Packet Length: 30 
 // Packet Data: 255 
 // RX Filter BW: 34.1 kHz
 // Symbol Rate: 19.99969 kBaud
 // Sync Word Length: 32 Bits 
-// TX Power: 10 dBm (requires define CCFG_FORCE_VDDR_HH = 0 in ccfg.c, see CC13xx/CC26xx Technical Reference Manual)
+// TX Power: 14 dBm (requires define CCFG_FORCE_VDDR_HH = 1 in ccfg.c, see CC13xx/CC26xx Technical Reference Manual)
 // Whitening: No whitening 
 
 #include <ti/devices/DeviceFamily.h>
@@ -136,8 +136,10 @@ uint32_t pOverrides[] =
     // Rx: Set anti-aliasing filter bandwidth to 0xD (in ADI0, set IFAMPCTL3[7:4]=0xD)
     ADI_HALFREG_OVERRIDE(0,61,0xF,0xD),
     // TX power override
-    // DC/DC regulator: In Tx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4). In Rx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4).
-    (uint32_t)0xFCFC08C3,
+    // DC/DC regulator: In Tx with 14 dBm PA setting, use DCDCCTL5[3:0]=0xF (DITHER_EN=1 and IPEAK=7). In Rx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4).
+    (uint32_t)0xFFFC08C3,
+    // Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)
+    ADI_REG_OVERRIDE(0,12,0xF8),
     (uint32_t)0xFFFFFFFF,
 };
 
@@ -174,7 +176,7 @@ rfc_CMD_PROP_RADIO_DIV_SETUP_t RF_cmdPropRadioDivSetup =
     .config.biasMode = 0x1,
     .config.analogCfgMode = 0x0,
     .config.bNoFsPowerUp = 0x0,
-    .txPower = 0x6EE1,
+    .txPower = 0x9F3F,
     .pRegOverride = pOverrides,
     .centerFreq = 0x0364,
     .intFreq = 0x8000,
@@ -203,6 +205,34 @@ rfc_CMD_FS_t RF_cmdFs =
     .__dummy1 = 0x00,
     .__dummy2 = 0x00,
     .__dummy3 = 0x0000,
+};
+
+// CMD_TX_TEST
+// Transmitter Test Command
+rfc_CMD_TX_TEST_t RF_cmdTxTest =
+{
+    .commandNo = 0x0808,
+    .status = 0x0000,
+    .pNextOp = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
+    .startTime = 0x00000000,
+    .startTrigger.triggerType = 0x0,
+    .startTrigger.bEnaCmd = 0x0,
+    .startTrigger.triggerNo = 0x0,
+    .startTrigger.pastTrig = 0x0,
+    .condition.rule = 0x1,
+    .condition.nSkip = 0x0,
+    .config.bUseCw = 0x0,
+    .config.bFsOff = 0x1,
+    .config.whitenMode = 0x2,
+    .__dummy0 = 0x00,
+    .txWord = 0xAAAA,
+    .__dummy1 = 0x00,
+    .endTrigger.triggerType = 0x1,
+    .endTrigger.bEnaCmd = 0x0,
+    .endTrigger.triggerNo = 0x0,
+    .endTrigger.pastTrig = 0x0,
+    .syncWord = 0x00000000,
+    .endTime = 0x00000000,
 };
 
 // CMD_PROP_TX

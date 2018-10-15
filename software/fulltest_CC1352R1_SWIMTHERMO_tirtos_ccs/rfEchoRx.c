@@ -57,6 +57,7 @@
 
 /* Application Header files */ 
 #include "RFQueue.h"
+#include "smartrf_settings/smartrf_settings.h"
 
 #define THREADSTACKSIZE (1024)
 

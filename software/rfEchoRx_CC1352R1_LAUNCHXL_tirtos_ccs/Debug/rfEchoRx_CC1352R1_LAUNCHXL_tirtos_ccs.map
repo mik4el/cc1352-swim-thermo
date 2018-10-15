@@ -1,7 +1,7 @@
 ******************************************************************************
                   TI ARM Linker Unix v18.1.3                   
 ******************************************************************************
->> Linked Sun Sep  2 21:20:35 2018
+>> Linked Mon Oct 15 11:44:57 2018
 
 OUTPUT FILE NAME:   <rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs.out>
 ENTRY POINT SYMBOL: "ResetISR"  address: 0000333d
@@ -13,7 +13,7 @@ MEMORY CONFIGURATION
 ----------------------  --------  ---------  --------  --------  ----  --------
   FLASH                 00000000   00058000  000063a4  00051c5c  R  X
   GPRAM                 11000000   00002000  00000000  00002000  RW X
-  SRAM                  20000000   00014000  000023bf  00011c41  RW X
+  SRAM                  20000000   00014000  000023c3  00011c3d  RW X
 
 
 SEGMENT ALLOCATION MAP
@@ -33,9 +33,9 @@ run origin  load origin   length   init length attrs members
   20000108    20000108    00000004   00000000    rw- .data:xdcRomStatePtr
 20000110    20000110    00001000   00000000    r--
   20000110    20000110    00001000   00000000    r-- .priheap
-20001110    20001110    00000edb   00000000    rw-
+20001110    20001110    00000edf   00000000    rw-
   20001110    20001110    00000908   00000000    rw- .bss
-  20001a18    20001a18    000005d3   00000000    rw- .data
+  20001a18    20001a18    000005d7   00000000    rw- .data
 20013c00    20013c00    00000400   00000000    rw-
   20013c00    20013c00    00000400   00000000    rw- .stack
 
@@ -48,10 +48,9 @@ section   page    origin      length       input sections
 .binit     0    00000000    00000000     
 
 .cinit     0    000060b0    000002a0     
-                  000060b0    00000246     (.cinit..data.load) [load image, compression = lzss]
-                  000062f6    00000002     --HOLE-- [fill = 0]
-                  000062f8    0000000c     (__TI_handler_table)
-                  00006304    00000004     --HOLE-- [fill = 0]
+                  000060b0    0000024b     (.cinit..data.load) [load image, compression = lzss]
+                  000062fb    00000001     --HOLE-- [fill = 0]
+                  000062fc    0000000c     (__TI_handler_table)
                   00006308    00000008     (.cinit..bss.load) [load image, compression = zero_init]
                   00006310    00000008     (.cinit..data:xdcRomConstPtr.load) [load image, compression = lzss]
                   00006318    00000008     (.cinit..data:xdcRomExternFuncPtr.load) [load image, compression = lzss]
@@ -101,14 +100,13 @@ section   page    origin      length       input sections
                   20001a10    00000004     (.common:PowerCC26XX_taskKey)
                   20001a14    00000004     (.common:readEntry)
 
-.data      0    20001a18    000005d3     UNINITIALIZED
+.data      0    20001a18    000005d7     UNINITIALIZED
                   20001a18    00000108     release_pem4f.oem4f (.data:ROM_stateStruct)
                   20001b20    000000c8     drivers_cc13x2_v1.aem4f : PowerCC26X2.oem4f (.data:PowerCC26X2_module)
                   20001be8    00000088     rom_sysbios.aem4f : rom_sysbios.obj (.data:$O1$$)
-                  20001c70    0000006c     smartrf_settings.obj (.data:pOverrides)
-                  20001cdc    00000054     release_pem4f.oem4f (.data:ti_sysbios_gates_GateMutex_Object__table__V)
-                  20001d30    0000004c     release_pem4f.oem4f (.data:ti_sysbios_knl_Task_Object__table__V)
-                  20001d7c    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : stkdepth_vars.c.obj (.data)
+                  20001c70    00000070     smartrf_settings.obj (.data:pOverrides)
+                  20001ce0    00000054     release_pem4f.oem4f (.data:ti_sysbios_gates_GateMutex_Object__table__V)
+                  20001d34    0000004c     release_pem4f.oem4f (.data:ti_sysbios_knl_Task_Object__table__V)
                   20001d80    00000048     release_pem4f.oem4f (.data:ti_sysbios_family_arm_cc26xx_Timer_Object__table__V)
                   20001dc8    00000030     release_pem4f.oem4f (.data:ti_sysbios_knl_Swi_Module_State_0_readyQ__A)
                   20001df8    00000030     release_pem4f.oem4f (.data:ti_sysbios_knl_Swi_Object__table__V)
@@ -138,11 +136,12 @@ section   page    origin      length       input sections
                   20001fc4    00000008     release_pem4f.oem4f (.data:ti_sysbios_knl_Swi_Module__root__V)
                   20001fcc    00000008     release_pem4f.oem4f (.data:ti_sysbios_knl_Task_Module__root__V)
                   20001fd4    00000008     release_pem4f.oem4f (.data:xdc_runtime_System_Module_State_0_atexitHandlers__A)
-                  20001fdc    00000004     release_pem4f.oem4f (.data:ti_sysbios_family_arm_m3_Hwi_Module_State_0_excContext__A)
-                  20001fe0    00000004     release_pem4f.oem4f (.data:ti_sysbios_family_arm_m3_Hwi_Module_State_0_excStack__A)
-                  20001fe4    00000004     release_pem4f.oem4f (.data:ti_sysbios_knl_Task_Module_State_0_idleTask__A)
-                  20001fe8    00000002     release_pem4f.oem4f (.data:ti_sysbios_family_arm_m3_Hwi_Module_State_0_excActive__A)
-                  20001fea    00000001     smartrf_settings.obj (.data)
+                  20001fdc    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : stkdepth_vars.c.obj (.data)
+                  20001fe0    00000004     release_pem4f.oem4f (.data:ti_sysbios_family_arm_m3_Hwi_Module_State_0_excContext__A)
+                  20001fe4    00000004     release_pem4f.oem4f (.data:ti_sysbios_family_arm_m3_Hwi_Module_State_0_excStack__A)
+                  20001fe8    00000004     release_pem4f.oem4f (.data:ti_sysbios_knl_Task_Module_State_0_idleTask__A)
+                  20001fec    00000002     release_pem4f.oem4f (.data:ti_sysbios_family_arm_m3_Hwi_Module_State_0_excActive__A)
+                  20001fee    00000001     smartrf_settings.obj (.data)
 
 .stack     0    20013c00    00000400     UNINITIALIZED
                   20013c00    00000400     --HOLE--
@@ -535,9 +534,9 @@ MODULE SUMMARY
        Total:                             1576    200       392    
                                                                    
     ./smartrf_settings/
-       smartrf_settings.obj               710     4276      249    
+       smartrf_settings.obj               710     4276      253    
     +--+----------------------------------+-------+---------+---------+
-       Total:                             710     4276      249    
+       Total:                             710     4276      253    
                                                                    
     /Users/mikael/Code/cc1352-swim-thermo/software/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs/Debug/configPkg/package/cfg/
        release_pem4f.oem4f                454     1143      1826   
@@ -611,15 +610,15 @@ MODULE SUMMARY
        Total:                             6128    28        906    
                                                                    
        Stack:                             0       0         1024   
-       Linker Generated:                  424     666       0      
+       Linker Generated:                  424     671       0      
     +--+----------------------------------+-------+---------+---------+
-       Grand Total:                       19096   6405      5054   
+       Grand Total:                       19096   6410      5058   
 
 
 LINKER GENERATED COPY TABLES
 
 __TI_cinit_table @ 00006328 records: 5, size/record: 8, table size: 40
-	.data: load addr=000060b0, load size=00000246 bytes, run addr=20001a18, run size=000005d3 bytes, compression=lzss
+	.data: load addr=000060b0, load size=0000024b bytes, run addr=20001a18, run size=000005d7 bytes, compression=lzss
 	.bss: load addr=00006308, load size=00000008 bytes, run addr=20001110, run size=00000908 bytes, compression=zero_init
 	.data:xdcRomConstPtr: load addr=00006310, load size=00000008 bytes, run addr=20000100, run size=00000004 bytes, compression=lzss
 	.data:xdcRomExternFuncPtr: load addr=00006318, load size=00000008 bytes, run addr=20000104, run size=00000004 bytes, compression=lzss
@@ -628,7 +627,7 @@ __TI_cinit_table @ 00006328 records: 5, size/record: 8, table size: 40
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 000062f8 records: 3, size/record: 4, table size: 12
+__TI_handler_table @ 000062fc records: 3, size/record: 4, table size: 12
 	index: 0, handler: __TI_decompress_lzss
 	index: 1, handler: __TI_decompress_none
 	index: 2, handler: __TI_zero_init
@@ -941,8 +940,8 @@ UNDEFED   SHT$$INIT_ARRAY$$Limit
 000000cd  __TARG__                                                             
 00006328  __TI_CINIT_Base                                                      
 00006350  __TI_CINIT_Limit                                                     
-000062f8  __TI_Handler_Table_Base                                              
-00006304  __TI_Handler_Table_Limit                                             
+000062fc  __TI_Handler_Table_Base                                              
+00006308  __TI_Handler_Table_Limit                                             
 000022fd  __TI_auto_init                                                       
 00002e69  __TI_decompress_lzss                                                 
 000047df  __TI_decompress_none                                                 
@@ -987,7 +986,7 @@ ffffffff  binit
 20001986  driverlib_release_0_51995                                            
 00002ed1  main                                                                 
 00000335  mainThread                                                           
-20001d7c  main_func_sp                                                         
+20001fdc  main_func_sp                                                         
 0000243d  memcpy                                                               
 00002b59  memset                                                               
 20001c70  pOverrides                                                           
@@ -1063,9 +1062,9 @@ ffffffff  binit
 00005e48  ti_sysbios_family_arm_m3_Hwi_E_hwiLimitExceeded__C                   
 10039c01  ti_sysbios_family_arm_m3_Hwi_Instance_finalize__E                    
 100394b5  ti_sysbios_family_arm_m3_Hwi_Instance_init__E                        
-20001fe8  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excActive__A             
-20001fdc  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excContext__A            
-20001fe0  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excStack__A              
+20001fec  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excActive__A             
+20001fe0  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excContext__A            
+20001fe4  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excStack__A              
 00005c40  ti_sysbios_family_arm_m3_Hwi_Module__id__C                           
 20001f74  ti_sysbios_family_arm_m3_Hwi_Module__root__V                         
 1003ade9  ti_sysbios_family_arm_m3_Hwi_Module__startupDone__S                  
@@ -1153,7 +1152,7 @@ e000e000  ti_sysbios_family_arm_m3_Hwi_nvic
 1003aa01  ti_sysbios_gates_GateMutex_Object__create__S                         
 1003ae61  ti_sysbios_gates_GateMutex_Object__delete__S                         
 1003b119  ti_sysbios_gates_GateMutex_Object__destruct__S                       
-20001cdc  ti_sysbios_gates_GateMutex_Object__table__V                          
+20001ce0  ti_sysbios_gates_GateMutex_Object__table__V                          
 1003b705  ti_sysbios_gates_GateMutex_Params__init__S                           
 1003ab9d  ti_sysbios_gates_GateMutex_construct                                 
 1003aa35  ti_sysbios_gates_GateMutex_create                                    
@@ -1406,7 +1405,7 @@ e000e000  ti_sysbios_family_arm_m3_Hwi_nvic
 20001110  ti_sysbios_knl_Task_Instance_State_0_stack__A                        
 10039551  ti_sysbios_knl_Task_Instance_finalize__E                             
 100391d9  ti_sysbios_knl_Task_Instance_init__E                                 
-20001fe4  ti_sysbios_knl_Task_Module_State_0_idleTask__A                       
+20001fe8  ti_sysbios_knl_Task_Module_State_0_idleTask__A                       
 20001e28  ti_sysbios_knl_Task_Module_State_0_readyQ__A                         
 00005c3c  ti_sysbios_knl_Task_Module_State_inactiveQ__O                        
 20001fcc  ti_sysbios_knl_Task_Module__root__V                                  
@@ -1420,7 +1419,7 @@ e000e000  ti_sysbios_family_arm_m3_Hwi_nvic
 1003b359  ti_sysbios_knl_Task_Object__get__S                                   
 0000609c  ti_sysbios_knl_Task_Object__heap__C                                  
 00005d30  ti_sysbios_knl_Task_Object__table__C                                 
-20001d30  ti_sysbios_knl_Task_Object__table__V                                 
+20001d34  ti_sysbios_knl_Task_Object__table__V                                 
 1003b771  ti_sysbios_knl_Task_Params__init__S                                  
 1003b7fb  ti_sysbios_knl_Task_SupportProxy_Module__startupDone__S              
 1003b7fb  ti_sysbios_knl_Task_SupportProxy_Module__startupDone__S__mangled__   
@@ -1915,8 +1914,8 @@ address   name
 000060a0  xdc_runtime_SysCallback_flushFxn__C                                  
 000060a4  xdc_runtime_SysCallback_putchFxn__C                                  
 000060a8  xdc_runtime_SysCallback_readyFxn__C                                  
-000062f8  __TI_Handler_Table_Base                                              
-00006304  __TI_Handler_Table_Limit                                             
+000062fc  __TI_Handler_Table_Base                                              
+00006308  __TI_Handler_Table_Limit                                             
 00006328  __TI_CINIT_Base                                                      
 00006350  __TI_CINIT_Limit                                                     
 00057fa8  __ccfg                                                               
@@ -2318,9 +2317,8 @@ address   name
 20001b18  ti_sysbios_family_arm_cc26xx_Timer_Module__state__V                  
 20001b20  PowerCC26X2_module                                                   
 20001c70  pOverrides                                                           
-20001cdc  ti_sysbios_gates_GateMutex_Object__table__V                          
-20001d30  ti_sysbios_knl_Task_Object__table__V                                 
-20001d7c  main_func_sp                                                         
+20001ce0  ti_sysbios_gates_GateMutex_Object__table__V                          
+20001d34  ti_sysbios_knl_Task_Object__table__V                                 
 20001d80  ti_sysbios_family_arm_cc26xx_Timer_Object__table__V                  
 20001dc8  ti_sysbios_knl_Swi_Module_State_0_readyQ__A                          
 20001df8  ti_sysbios_knl_Swi_Object__table__V                                  
@@ -2352,10 +2350,11 @@ address   name
 20001fc4  ti_sysbios_knl_Swi_Module__root__V                                   
 20001fcc  ti_sysbios_knl_Task_Module__root__V                                  
 20001fd4  xdc_runtime_System_Module_State_0_atexitHandlers__A                  
-20001fdc  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excContext__A            
-20001fe0  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excStack__A              
-20001fe4  ti_sysbios_knl_Task_Module_State_0_idleTask__A                       
-20001fe8  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excActive__A             
+20001fdc  main_func_sp                                                         
+20001fe0  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excContext__A            
+20001fe4  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excStack__A              
+20001fe8  ti_sysbios_knl_Task_Module_State_0_idleTask__A                       
+20001fec  ti_sysbios_family_arm_m3_Hwi_Module_State_0_excActive__A             
 20013c00  __stack                                                              
 20014000  __STACK_END                                                          
 e000e000  ti_sysbios_family_arm_m3_Hwi_nvic                                    

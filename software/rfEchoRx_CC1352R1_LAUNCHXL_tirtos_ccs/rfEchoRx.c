@@ -46,6 +46,7 @@
 
 /* Application Header files */ 
 #include "RFQueue.h"
+#include "smartrf_settings/smartrf_settings.h"
 
 /***** Defines *****/
 /* Packet RX/TX Configuration */

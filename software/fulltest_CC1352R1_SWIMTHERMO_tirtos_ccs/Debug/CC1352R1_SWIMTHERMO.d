@@ -1,7 +1,7 @@
 # FIXED
 
 CC1352R1_SWIMTHERMO.obj: ../CC1352R1_SWIMTHERMO.c
-CC1352R1_SWIMTHERMO.obj: /Users/mikael/Code/cc1352-swim-thermo/software/fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs2/CC1352R1_SWIMTHERMO.h
+CC1352R1_SWIMTHERMO.obj: /Users/mikael/Code/cc1352-swim-thermo/software/fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs/CC1352R1_SWIMTHERMO.h
 CC1352R1_SWIMTHERMO.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/PIN.h
 CC1352R1_SWIMTHERMO.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdbool.h
 CC1352R1_SWIMTHERMO.obj: /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdint.h
@@ -64,7 +64,7 @@ CC1352R1_SWIMTHERMO.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/sourc
 CC1352R1_SWIMTHERMO.obj: /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/spi/SPICC26XXDMA.h
 
 ../CC1352R1_SWIMTHERMO.c: 
-/Users/mikael/Code/cc1352-swim-thermo/software/fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs2/CC1352R1_SWIMTHERMO.h: 
+/Users/mikael/Code/cc1352-swim-thermo/software/fulltest_CC1352R1_SWIMTHERMO_tirtos_ccs/CC1352R1_SWIMTHERMO.h: 
 /Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/source/ti/drivers/PIN.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdbool.h: 
 /Applications/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdint.h: 

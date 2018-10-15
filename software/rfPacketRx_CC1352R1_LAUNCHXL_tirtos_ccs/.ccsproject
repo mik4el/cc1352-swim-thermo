@@ -15,4 +15,5 @@
 	<templateProperties value="id=rfPacketRx_CC1352R1_LAUNCHXL_tirtos_ccs.projectspec.rfPacketRx_CC1352R1_LAUNCHXL_tirtos_ccs,buildProfile=release,isHybrid=true"/>
 	<origin value="/Users/mikael/ti/simplelink_cc13x2_sdk_2_20_00_71/examples/rtos/CC1352R1_LAUNCHXL/drivers/rfPacketRx/tirtos/ccs/rfPacketRx_CC1352R1_LAUNCHXL_tirtos_ccs.projectspec"/>
 	<filesToOpen value=""/>
+	<isTargetManual value="false"/>
 </projectOptions>

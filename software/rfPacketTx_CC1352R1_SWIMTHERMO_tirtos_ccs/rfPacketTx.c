@@ -50,7 +50,7 @@
 /***** Defines *****/
 
 /* Do power measurement */
-//#define POWER_MEASUREMENT
+#define POWER_MEASUREMENT
 
 /* Packet TX Configuration */
 #define PAYLOAD_LENGTH      30
@@ -95,6 +95,9 @@ PIN_Config pinTable[] =
 
 void *mainThread(void *arg0)
 {
+
+    printf("Starting thread...\n");
+
     RF_Params rfParams;
     RF_Params_init(&rfParams);
 
@@ -116,6 +119,9 @@ void *mainThread(void *arg0)
     RF_cmdPropTx.pPkt = packet;
     RF_cmdPropTx.startTrigger.triggerType = TRIG_NOW;
 
+
+    printf("Requesting radio access...\n");
+
     /* Request access to the radio */
     rfHandle = RF_open(&rfObject, &RF_prop, (RF_RadioSetup*)&RF_cmdPropRadioDivSetup, &rfParams);
 
@@ -136,6 +142,8 @@ void *mainThread(void *arg0)
         /* Send packet */
         RF_EventMask terminationReason = RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx,
                                                    RF_PriorityNormal, NULL, 0);
+
+        printf("Packet sent...\n");
 
         switch(terminationReason)
         {
@@ -197,6 +205,8 @@ void *mainThread(void *arg0)
 #endif        
         /* Power down the radio */
         RF_yield(rfHandle);
+
+        printf("Sleep...\n");
 
 #ifdef POWER_MEASUREMENT
         /* Sleep for PACKET_INTERVAL s */
