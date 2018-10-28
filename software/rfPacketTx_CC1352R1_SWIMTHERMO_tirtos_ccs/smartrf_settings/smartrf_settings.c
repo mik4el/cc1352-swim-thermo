@@ -18,13 +18,13 @@
 // 802.15.4g Mode: 0 
 // Select bit order to transmit PSDU octets:: 1 
 // Packet Length Config: Variable 
-// Max Packet Length: 128 
+// Max Packet Length: 255 
 // Packet Length: 20 
 // Packet Data: 255 
 // RX Filter BW: 34.1 kHz
 // Symbol Rate: 19.99969 kBaud
 // Sync Word Length: 32 Bits 
-// TX Power: 14 dBm (requires define CCFG_FORCE_VDDR_HH = 0 in ccfg.c, see CC13xx/CC26xx Technical Reference Manual)
+// TX Power: 10 dBm (requires define CCFG_FORCE_VDDR_HH = 0 in ccfg.c, see CC13xx/CC26xx Technical Reference Manual)
 // Whitening: No whitening 
 
 #include <ti/devices/DeviceFamily.h>
@@ -72,7 +72,7 @@ RF_TxPowerTable_Entry txPowerTable[] =
     {11, RF_TxPowerTable_DEFAULT_PA_ENTRY(23, 2, 0, 42) },
     {12, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 0, 0, 58) },
     {13, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 0, 0, 102) }, // The original PA value (12.5 dBm) have been rounded to an integer value.
-    {14, RF_TxPowerTable_DEFAULT_PA_ENTRY(63, 0, 1, 79) },
+    {14, RF_TxPowerTable_DEFAULT_PA_ENTRY(63, 0, 1, 79) }, // This setting requires CCFG_FORCE_VDDR_HH = 1.
     RF_TxPowerTable_TERMINATION_ENTRY
 };
 
@@ -136,10 +136,8 @@ uint32_t pOverrides[] =
     // Rx: Set anti-aliasing filter bandwidth to 0xD (in ADI0, set IFAMPCTL3[7:4]=0xD)
     ADI_HALFREG_OVERRIDE(0,61,0xF,0xD),
     // TX power override
-    // DC/DC regulator: In Tx with 14 dBm PA setting, use DCDCCTL5[3:0]=0xF (DITHER_EN=1 and IPEAK=7). In Rx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4).
-    (uint32_t)0xFFFC08C3,
-    // Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)
-    ADI_REG_OVERRIDE(0,12,0xF8),
+    // DC/DC regulator: In Tx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4). In Rx, use DCDCCTL5[3:0]=0xC (DITHER_EN=1 and IPEAK=4).
+    (uint32_t)0xFCFC08C3,
     (uint32_t)0xFFFFFFFF,
 };
 
@@ -176,7 +174,7 @@ rfc_CMD_PROP_RADIO_DIV_SETUP_t RF_cmdPropRadioDivSetup =
     .config.biasMode = 0x1,
     .config.analogCfgMode = 0x0,
     .config.bNoFsPowerUp = 0x0,
-    .txPower = 0x9F3F,
+    .txPower = 0x6EE1,
     .pRegOverride = pOverrides,
     .centerFreq = 0x0364,
     .intFreq = 0x8000,
@@ -207,31 +205,6 @@ rfc_CMD_FS_t RF_cmdFs =
     .__dummy3 = 0x0000,
 };
 
-// CMD_RX_TEST
-// Receiver Test Command
-rfc_CMD_RX_TEST_t RF_cmdRxTest =
-{
-    .commandNo = 0x0807,
-    .status = 0x0000,
-    .pNextOp = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
-    .startTime = 0x00000000,
-    .startTrigger.triggerType = 0x0,
-    .startTrigger.bEnaCmd = 0x0,
-    .startTrigger.triggerNo = 0x0,
-    .startTrigger.pastTrig = 0x0,
-    .condition.rule = 0x1,
-    .condition.nSkip = 0x0,
-    .config.bEnaFifo = 0x0,
-    .config.bFsOff = 0x0,
-    .config.bNoSync = 0x1,
-    .endTrigger.triggerType = 0x1,
-    .endTrigger.bEnaCmd = 0x0,
-    .endTrigger.triggerNo = 0x0,
-    .endTrigger.pastTrig = 0x0,
-    .syncWord = 0x00000000,
-    .endTime = 0x00000000,
-};
-
 // CMD_PROP_TX
 // Proprietary Mode Transmit Command
 rfc_CMD_PROP_TX_t RF_cmdPropTx =
@@ -249,8 +222,8 @@ rfc_CMD_PROP_TX_t RF_cmdPropTx =
     .pktConf.bFsOff = 0x0,
     .pktConf.bUseCrc = 0x1,
     .pktConf.bVarLen = 0x1,
-    .pktLen = 0x1E, // SET APPLICATION PAYLOAD LENGTH
-    .syncWord = 0x930B51DE,
+    .pktLen = 0x14,
+    .syncWord = 0x00000000,
     .pPkt = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
 };
 
@@ -283,8 +256,8 @@ rfc_CMD_PROP_RX_t RF_cmdPropRx =
     .rxConf.bAppendRssi = 0x0,
     .rxConf.bAppendTimestamp = 0x0,
     .rxConf.bAppendStatus = 0x1,
-    .syncWord = 0x930B51DE,
-    .maxPktLen = 0xFF, // MAKE SURE DATA ENTRY IS LARGE ENOUGH
+    .syncWord = 0x00000000,
+    .maxPktLen = 0xFF,
     .address0 = 0xAA,
     .address1 = 0xBB,
     .endTrigger.triggerType = 0x1,
@@ -295,4 +268,3 @@ rfc_CMD_PROP_RX_t RF_cmdPropRx =
     .pQueue = 0, // INSERT APPLICABLE POINTER: (dataQueue_t*)&xxx
     .pOutput = 0, // INSERT APPLICABLE POINTER: (uint8_t*)&xxx
 };
-
