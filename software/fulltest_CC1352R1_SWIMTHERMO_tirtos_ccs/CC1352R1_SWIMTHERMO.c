@@ -59,8 +59,8 @@ ADCBufCC26X2_Object adcBufCC26xxObjects[CC1352R1_SWIMTHERMO_ADCBUFCOUNT];
  *  entries. The mapping of dio and internal signals is package dependent.
  */
 const ADCBufCC26X2_AdcChannelLutEntry ADCBufCC26X2_adcChannelLut[CC1352R1_SWIMTHERMO_ADCBUF0CHANNELCOUNT] = {
-    {CC1352R1_SWIMTHERMO_TAO_1, ADC_COMPB_IN_AUXIO7},
-    {CC1352R1_SWIMTHERMO_TAO_2, ADC_COMPB_IN_AUXIO6},
+    {CC1352R1_SWIMTHERMO_TAO_1, ADC_COMPB_IN_AUXIO6},
+    {CC1352R1_SWIMTHERMO_TAO_2, ADC_COMPB_IN_AUXIO7},
     {PIN_UNASSIGNED, ADC_COMPB_IN_VDDS},
     {PIN_UNASSIGNED, ADC_COMPB_IN_DCOUPL},
     {PIN_UNASSIGNED, ADC_COMPB_IN_VSS},
@@ -96,18 +96,18 @@ ADCCC26XX_Object adcCC26xxObjects[CC1352R1_SWIMTHERMO_ADCCOUNT];
 const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCCOUNT] = {
     {
         .adcDIO              = CC1352R1_SWIMTHERMO_TAO_1,
-        .adcCompBInput       = ADC_COMPB_IN_AUXIO7,
+        .adcCompBInput       = ADC_COMPB_IN_AUXIO6,
         .refSource           = ADCCC26XX_FIXED_REFERENCE,
-        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_2P7_US,
+        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_10P9_MS,
         .inputScalingEnabled = true,
         .triggerSource       = ADCCC26XX_TRIGGER_MANUAL,
         .returnAdjustedVal   = false
     },
     {
         .adcDIO              = CC1352R1_SWIMTHERMO_TAO_2,
-        .adcCompBInput       = ADC_COMPB_IN_AUXIO6,
+        .adcCompBInput       = ADC_COMPB_IN_AUXIO7,
         .refSource           = ADCCC26XX_FIXED_REFERENCE,
-        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_2P7_US,
+        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_10P9_MS,
         .inputScalingEnabled = true,
         .triggerSource       = ADCCC26XX_TRIGGER_MANUAL,
         .returnAdjustedVal   = false
@@ -116,7 +116,7 @@ const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCCOUNT] = {
         .adcDIO              = PIN_UNASSIGNED,
         .adcCompBInput       = ADC_COMPB_IN_DCOUPL,
         .refSource           = ADCCC26XX_FIXED_REFERENCE,
-        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_2P7_US,
+        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_10P9_MS,
         .inputScalingEnabled = true,
         .triggerSource       = ADCCC26XX_TRIGGER_MANUAL,
         .returnAdjustedVal   = false
@@ -125,7 +125,7 @@ const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCCOUNT] = {
         .adcDIO              = PIN_UNASSIGNED,
         .adcCompBInput       = ADC_COMPB_IN_VSS,
         .refSource           = ADCCC26XX_FIXED_REFERENCE,
-        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_2P7_US,
+        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_10P9_MS,
         .inputScalingEnabled = true,
         .triggerSource       = ADCCC26XX_TRIGGER_MANUAL,
         .returnAdjustedVal   = false
@@ -134,7 +134,7 @@ const ADCCC26XX_HWAttrs adcCC26xxHWAttrs[CC1352R1_SWIMTHERMO_ADCCOUNT] = {
         .adcDIO              = PIN_UNASSIGNED,
         .adcCompBInput       = ADC_COMPB_IN_VDDS,
         .refSource           = ADCCC26XX_FIXED_REFERENCE,
-        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_2P7_US,
+        .samplingDuration    = ADCCC26XX_SAMPLING_DURATION_10P9_MS,
         .inputScalingEnabled = true,
         .triggerSource       = ADCCC26XX_TRIGGER_MANUAL,
         .returnAdjustedVal   = false
@@ -190,7 +190,7 @@ const GPTimerCC26XX_Config GPTimerCC26XX_config[CC1352R1_SWIMTHERMO_GPTIMERPARTS
 const PIN_Config BoardGpioInitTable[] = {
 
     CC1352R1_SWIMTHERMO_PSU_ENABLE | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX, /* LED PSU initially off */
-    CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL, /* T_ON_1 should be default high */
+    CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_1 should be default high */
     CC1352R1_SWIMTHERMO_T_ON_2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_2 should be default low */
     CC1352R1_SWIMTHERMO_SWITCH | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_BOTHEDGES | PIN_HYSTERESIS,             /* Button is active low */
     PIN_TERMINATE

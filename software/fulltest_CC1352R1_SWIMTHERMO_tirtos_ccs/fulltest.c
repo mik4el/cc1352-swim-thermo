@@ -177,7 +177,7 @@ static PIN_State pinState;
  */
 
 PIN_Config pinTable[] = {
-                         CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL, /* T_ON_1 should be default high */
+                         CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_1 should be default low */
                          CC1352R1_SWIMTHERMO_T_ON_2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_2 should be default low */
                          CC1352R1_SWIMTHERMO_SWITCH  | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
                          PIN_TERMINATE
@@ -253,13 +253,15 @@ void readLMT70()
 void toggleLMT70() {
     uint32_t currVal = 0;
     currVal = PIN_getOutputValue(CC1352R1_SWIMTHERMO_T_ON_1);
-    if (currVal) {
-        printf("T_ON1 on\n");
+    if (currVal == 0) {
+        printf("T_ON1 to on\n");
+        printf("T_ON2 to on\n");
     } else {
-        printf("T_ON2 on\n");
+        printf("T_ON1 to off\n");
+        printf("T_ON2 to off\n");
     }
     PIN_setOutputValue(pinHandle, CC1352R1_SWIMTHERMO_T_ON_1, !currVal);
-    PIN_setOutputValue(pinHandle, CC1352R1_SWIMTHERMO_T_ON_2, currVal);
+    PIN_setOutputValue(pinHandle, CC1352R1_SWIMTHERMO_T_ON_2, !currVal);
 }
 
 /*
@@ -282,6 +284,7 @@ void buttonCallbackFxn(PIN_Handle handle, PIN_Id pinId) {
                     for (i = 0; i < 10; i++) {
                         readLMT70();
                     }
+                    toggleLMT70();
                 }
                 printf("Button press\n");
                 break;

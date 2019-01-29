@@ -67,14 +67,14 @@ extern const PIN_Config BoardGpioInitTable[];
  *      <board signal alias>                  <pin mapping>
  */
 
-/* CC1352R1_SWIMTHERMO IO */
-#define CC1352R1_SWIMTHERMO_SWITCH              IOID_8 // Launchpad BTN1, IOID_8 in HW v1.0, but already taken in Launchpad
-#define CC1352R1_SWIMTHERMO_T_ON_1              IOID_9  // IOID_9 in HW v1.0. Error in HW, should be IOID_5-7
-#define CC1352R1_SWIMTHERMO_TAO_1               IOID_23 // IOID_10 in HW v1.0. Error in HW, should be IOID_23-30
-#define CC1352R1_SWIMTHERMO_T_ON_2              IOID_11  // IOID_11 in HW v1.0. Error in HW, should be IOID_5-7
-#define CC1352R1_SWIMTHERMO_TAO_2               IOID_24 // IOID_12 in HW v1.0. Error in HW, should be IOID_23-30
-#define CC1352R1_SWIMTHERMO_LED_EASYSET         IOID_13 // Should be IOID_13, but already taken in Launchpad
-#define CC1352R1_SWIMTHERMO_PSU_ENABLE          IOID_14 // Should be IOID_14, but already taken in Launchpad
+/* CC1352R1_SWIMTHERMO IO v1.1 */
+#define CC1352R1_SWIMTHERMO_SWITCH              IOID_5 // IOID_8 in HW v1.0
+#define CC1352R1_SWIMTHERMO_T_ON_1              IOID_6  // IOID_9 in HW v1.0.
+#define CC1352R1_SWIMTHERMO_T_ON_2              IOID_7  // IOID_11 in HW v1.0.
+#define CC1352R1_SWIMTHERMO_TAO_1               IOID_24 // IOID_10 in HW v1.0.
+#define CC1352R1_SWIMTHERMO_TAO_2               IOID_23 // IOID_12 in HW v1.0.
+#define CC1352R1_SWIMTHERMO_LED_EASYSET         IOID_13
+#define CC1352R1_SWIMTHERMO_PSU_ENABLE          IOID_14
 
 /* SPI Board */
 #define CC1352R1_SWIMTHERMO_SPI0_MISO             PIN_UNASSIGNED
