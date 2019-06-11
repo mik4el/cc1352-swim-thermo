@@ -55,6 +55,10 @@
 #include "NodeTask.h"
 #include "NodeRadioTask.h"
 
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/aon_batmon.h)
+#include DeviceFamily_constructPath(driverlib/aux_adc.h) //for ADC operations
+
 /***** Defines *****/
 #define NODE_TASK_STACK_SIZE 1024
 #define NODE_TASK_PRIORITY   3
@@ -72,7 +76,6 @@
 #define NODE_ADCTASK_REPORTINTERVAL_FAST                5
 #define NODE_ADCTASK_REPORTINTERVAL_FAST_DURIATION_MS   30000
 
-
 #define NUM_EDDYSTONE_URLS      5
 
 /***** Variable declarations *****/
@@ -82,10 +85,8 @@ static uint8_t nodeTaskStack[NODE_TASK_STACK_SIZE];
 Event_Struct nodeEvent;  /* Not static so you can see in ROV */
 static Event_Handle nodeEventHandle;
 static uint16_t latestAdcValue;
-
-/* Clock for the fast report timeout */
-Clock_Struct fastReportTimeoutClock;     /* not static so you can see in ROV */
-static Clock_Handle fastReportTimeoutClockHandle;
+static int32_t latestInternalTempValue;
+static uint16_t latestBatt;
 
 /* Pin driver handle */
 static PIN_Handle buttonPinHandle;
@@ -95,7 +96,6 @@ static PIN_State ledPinState;
 
 /* Display driver handles */
 static Display_Handle hDisplayLcd;
-static Display_Handle hDisplaySerial;
 
 /* Enable the 3.3V power domain used by the LCD */
 PIN_Config pinTable[] = {
@@ -117,10 +117,13 @@ PIN_Config buttonPinTable[] = {
 
 static uint8_t nodeAddress = 0;
 
+#ifdef FEATURE_BLE_ADV
+static BleAdv_Stats bleAdvStats = {0};
+#endif
+
 /***** Prototypes *****/
 static void nodeTaskFunction(UArg arg0, UArg arg1);
 static void updateLcd(void);
-static void fastReportTimeoutCallback(UArg arg0);
 static void adcCallback(uint16_t adcValue);
 static void buttonCallback(PIN_Handle handle, PIN_Id pinId);
 
@@ -133,15 +136,6 @@ void NodeTask_init(void)
     Event_construct(&nodeEvent, &eventParam);
     nodeEventHandle = Event_handle(&nodeEvent);
 
-    /* Create clock object which is used for fast report timeout */
-    Clock_Params clkParams;
-    Clock_Params_init(&clkParams);
-
-    clkParams.period = 0;
-    clkParams.startFlag = FALSE;
-    Clock_construct(&fastReportTimeoutClock, fastReportTimeoutCallback, 1, &clkParams);
-    fastReportTimeoutClockHandle = Clock_handle(&fastReportTimeoutClock);
-
     /* Create the node task */
     Task_Params_init(&nodeTaskParams);
     nodeTaskParams.stackSize = NODE_TASK_STACK_SIZE;
@@ -149,6 +143,13 @@ void NodeTask_init(void)
     nodeTaskParams.stack = &nodeTaskStack;
     Task_construct(&nodeTask, nodeTaskFunction, &nodeTaskParams, NULL);
 }
+
+#ifdef FEATURE_BLE_ADV
+void NodeTask_advStatsCB(BleAdv_Stats stats)
+{
+    memcpy(&bleAdvStats, &stats, sizeof(BleAdv_Stats));
+}
+#endif
 
 static void nodeTaskFunction(UArg arg0, UArg arg1)
 {
@@ -167,13 +168,6 @@ static void nodeTaskFunction(UArg arg0, UArg arg1)
      * DevPack, add the precompiler define BOARD_DISPLAY_EXCLUDE_UART.
      */
     hDisplayLcd = Display_open(Display_Type_LCD, &params);
-    hDisplaySerial = Display_open(Display_Type_UART, &params);
-
-    /* Check if the selected Display type was found and successfully opened */
-    if (hDisplaySerial)
-    {
-        Display_printf(hDisplaySerial, 0, 0, "Waiting for SCE ADC reading...");
-    }
 
     /* Check if the selected Display type was found and successfully opened */
     if (hDisplayLcd)
@@ -192,14 +186,6 @@ static void nodeTaskFunction(UArg arg0, UArg arg1)
     SceAdc_init(0x00010000, NODE_ADCTASK_REPORTINTERVAL_FAST, NODE_ADCTASK_CHANGE_MASK);
     SceAdc_registerAdcCallback(adcCallback);
     SceAdc_start();
-
-    /* setup timeout for fast report timeout */
-    Clock_setTimeout(fastReportTimeoutClockHandle,
-            NODE_ADCTASK_REPORTINTERVAL_FAST_DURIATION_MS * 1000 / Clock_tickPeriod);
-
-    /* Start fast report and timeout */
-    Clock_start(fastReportTimeoutClockHandle);
-
 
     buttonPinHandle = PIN_open(&buttonPinState, buttonPinTable);
     if (!buttonPinHandle)
@@ -239,10 +225,23 @@ static void nodeTaskFunction(UArg arg0, UArg arg1)
 
 static void updateLcd(void)
 {
+#ifdef FEATURE_BLE_ADV
+    char advMode[16] = {0};
+#endif
+
     /* get node address if not already done */
     if (nodeAddress == 0)
     {
         nodeAddress = nodeRadioTask_getNodeAddr();
+    }
+
+    double tempFormatted = FIXED2DOUBLE(FLOAT2FIXED(convertADCToTempDouble(latestAdcValue)));
+    if (tempFormatted > 128.0) {
+        tempFormatted = tempFormatted - 256.0; //display negative temperature correct
+    }
+    double internalTempFormatted = latestInternalTempValue;
+    if (internalTempFormatted > 128.0) {
+        internalTempFormatted = internalTempFormatted - 256.0; //display negative temperature correct
     }
 
     /* print to LCD */
@@ -250,16 +249,45 @@ static void updateLcd(void)
     Display_printf(hDisplayLcd, 0, 0, "NodeID: 0x%02x", nodeAddress);
     Display_printf(hDisplayLcd, 1, 0, "ADC: %04d", latestAdcValue);
 
-    /* Print to UART clear screen, put cuser to beggining of terminal and print the header */
-    Display_printf(hDisplaySerial, 0, 0, "\033[2J \033[0;0HNode ID: 0x%02x", nodeAddress);
-    Display_printf(hDisplaySerial, 0, 0, "Node ADC Reading: %04d", latestAdcValue);
+    Display_printf(hDisplayLcd, 2, 0, "TempA: %3.3f", tempFormatted);
+    Display_printf(hDisplayLcd, 3, 0, "TempI: %3.3f", internalTempFormatted);
+    Display_printf(hDisplayLcd, 4, 0, "Batt: %i", latestBatt);
+
+#ifdef FEATURE_BLE_ADV
+    if (advertisementType == BleAdv_AdertiserMs)
+    {
+         strncpy(advMode, "BLE MS", 6);
+    }
+    else if (advertisementType == BleAdv_AdertiserUrl)
+    {
+         strncpy(advMode, "Eddystone URL", 13);
+    }
+    else if (advertisementType == BleAdv_AdertiserUid)
+    {
+         strncpy(advMode, "Eddystone UID", 13);
+    }
+    else
+    {
+         strncpy(advMode, "None", 4);
+    }
+
+    /* print to LCD */
+    Display_printf(hDisplayLcd, 6, 0, "Adv Mode:");
+    Display_printf(hDisplayLcd, 7, 0, "%s", advMode);
+    Display_printf(hDisplayLcd, 8, 0, "Adv successful | failed");
+    Display_printf(hDisplayLcd, 9, 0, "%04d | %04d",
+                   bleAdvStats.successCnt + bleAdvStats.failCnt);
+#endif
 }
 
 static void adcCallback(uint16_t adcValue)
 {
-    /* Save latest value */
-    latestAdcValue = adcValue;
-
+    /* Calibrate and save latest values */
+    uint32_t calADC12_gain = AUXADCGetAdjustmentGain(AUXADC_REF_FIXED);
+    int8_t calADC12_offset = AUXADCGetAdjustmentOffset(AUXADC_REF_FIXED);
+    latestAdcValue = AUXADCAdjustValueForGainAndOffset(adcValue, calADC12_gain, calADC12_offset);
+    latestInternalTempValue = AONBatMonTemperatureGetDegC();
+    latestBatt = (AONBatMonBatteryVoltageGet() * 125) >> 5;
     /* Post event */
     Event_post(nodeEventHandle, NODE_EVENT_NEW_ADC_VALUE);
 }
@@ -273,40 +301,14 @@ static void buttonCallback(PIN_Handle handle, PIN_Id pinId)
     /* Debounce logic, only toggle if the button is still pushed (low) */
     CPUdelay(8000*50);
 
-
-    if (PIN_getInputValue(Board_PIN_BUTTON0) == 0)
-    {
-        //start fast report and timeout
-        SceAdc_setReportInterval(NODE_ADCTASK_REPORTINTERVAL_FAST, NODE_ADCTASK_CHANGE_MASK);
-        Clock_start(fastReportTimeoutClockHandle);
-    }
 #ifdef FEATURE_BLE_ADV
-    else if (PIN_getInputValue(Board_PIN_BUTTON1) == 0)
+    if (PIN_getInputValue(Board_PIN_BUTTON1) == 0)
     {
-        if (advertisementType != BleAdv_AdertiserUrl)
-        {
-            advertisementType++;
-        }
-
-        //If URL then cycle between url[0 - num urls]
         if (advertisementType == BleAdv_AdertiserUrl)
         {
-            if (eddystoneUrlIdx < NUM_EDDYSTONE_URLS)
-            {
-                //update URL
-                BleAdv_updateUrl(urls[eddystoneUrlIdx++]);
-            }
-            else
-            {
-                //last URL, reset index and increase advertiserType
-                advertisementType++;
-                eddystoneUrlIdx = 0;
-            }
-        }
-
-        if (advertisementType == BleAdv_AdertiserTypeEnd)
-        {
             advertisementType = BleAdv_AdertiserNone;
+        } else {
+            advertisementType = BleAdv_AdertiserUrl;
         }
 
         //Set advertisement type
@@ -314,18 +316,8 @@ static void buttonCallback(PIN_Handle handle, PIN_Id pinId)
 
         /* update display */
         Event_post(nodeEventHandle, NODE_EVENT_UPDATE_LCD);
-
-        //start fast report and timeout
-        SceAdc_setReportInterval(NODE_ADCTASK_REPORTINTERVAL_FAST, NODE_ADCTASK_CHANGE_MASK);
-        Clock_start(fastReportTimeoutClockHandle);
     }
 #endif
-}
-
-static void fastReportTimeoutCallback(UArg arg0)
-{
-    //stop fast report
-    SceAdc_setReportInterval(NODE_ADCTASK_REPORTINTERVAL_SLOW, NODE_ADCTASK_CHANGE_MASK);
 }
 
 #ifdef FEATURE_BLE_ADV

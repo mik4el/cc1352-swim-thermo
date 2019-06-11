@@ -53,6 +53,7 @@
 
 /* Standard C Libraries */
 #include <stdlib.h>
+#include <stdio.h>
 
 /* EasyLink API Header files */ 
 #include "easylink/EasyLink.h"
@@ -65,6 +66,7 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/aon_batmon.h)
 #include DeviceFamily_constructPath(driverlib/trng.h)
+#include DeviceFamily_constructPath(driverlib/aux_adc.h) //for ADC operations
 
 #ifdef FEATURE_BLE_ADV
 #include "ble_adv/BleAdv.h"
@@ -110,7 +112,7 @@ static Semaphore_Handle radioResultSemHandle;
 static struct RadioOperation currentRadioOperation;
 static uint16_t adcData;
 static uint8_t nodeAddress = 0;
-static struct DualModeSensorPacket dmSensorPacket;
+static struct DualModeInternalTempSensorPacket dmInternalTempSensorPacket;
 
 
 /* previous Tick count used to calculate uptime */
@@ -122,7 +124,7 @@ extern PIN_Handle ledPinHandle;
 /***** Prototypes *****/
 static void nodeRadioTaskFunction(UArg arg0, UArg arg1);
 static void returnRadioOperationStatus(enum NodeRadioOperationStatus status);
-static void sendDmPacket(struct DualModeSensorPacket sensorPacket, uint8_t maxNumberOfRetries, uint32_t ackTimeoutMs);
+static void sendDmPacket(struct DualModeInternalTempSensorPacket sensorPacket, uint8_t maxNumberOfRetries, uint32_t ackTimeoutMs);
 static void resendPacket(void);
 static void rxDoneCallback(EasyLink_RxPacket * rxPacket, EasyLink_Status status);
 
@@ -131,6 +133,11 @@ static void bleAdv_eventProxyCB(void);
 static void bleAdv_updateTlmCB(uint16_t *pVbatt, uint16_t *pTemp, uint32_t *pTime100MiliSec);
 static void bleAdv_updateMsButtonCB(uint8_t *pButton);
 #endif
+
+/***** Function definitions *****/
+double convertADCToTempDouble(uint16_t adcValue) {
+    return -0.193 * adcValue * (AUXADC_FIXED_REF_VOLTAGE_UNSCALED / 1000)  / 4095 + 212.009; // constants from LMT70 datasheet
+}
 
 /***** Function definitions *****/
 void NodeRadioTask_init(void) {
@@ -214,8 +221,8 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
     }
 
     /* Setup ADC sensor packet */
-    dmSensorPacket.header.sourceAddress = nodeAddress;
-    dmSensorPacket.header.packetType = RADIO_PACKET_TYPE_DM_SENSOR_PACKET;
+    dmInternalTempSensorPacket.header.sourceAddress = nodeAddress;
+        dmInternalTempSensorPacket.header.packetType = RADIO_PACKET_TYPE_DM_SENSOR_PACKET;
 
     /* Initialise previous Tick count used to calculate uptime for the TLM beacon */
     prevTicks = Clock_getTicks();
@@ -228,9 +235,11 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
     bleAdv_Params.pfnUpdateMsButtonCB = bleAdv_updateMsButtonCB;
     bleAdv_Params.pfnAdvStatsCB = NodeTask_advStatsCB;
     BleAdv_init(&bleAdv_Params);
-
-    /* initialize BLE advertisements to default to MS */
-    BleAdv_setAdvertiserType(BleAdv_AdertiserMs);
+    char url_format[] = "https://m4bd.com/s/%x/";
+    char url_ready[21];
+    sprintf(url_ready, url_format, nodeAddress);
+    BleAdv_updateUrl(url_ready);
+    BleAdv_setAdvertiserType(BleAdv_AdertiserNone);
 #endif
 
     /* Enter main task loop */
@@ -249,20 +258,20 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
             if (currentTicks > prevTicks)
             {
                 //calculate time since last reading in 0.1s units
-                dmSensorPacket.time100MiliSec += ((currentTicks - prevTicks) * Clock_tickPeriod) / 100000;
+                dmInternalTempSensorPacket.time100MiliSec += ((currentTicks - prevTicks) * Clock_tickPeriod) / 100000;
             }
             else
             {
                 //calculate time since last reading in 0.1s units
-                dmSensorPacket.time100MiliSec += ((prevTicks - currentTicks) * Clock_tickPeriod) / 100000;
+                dmInternalTempSensorPacket.time100MiliSec += ((prevTicks - currentTicks) * Clock_tickPeriod) / 100000;
             }
             prevTicks = currentTicks;
 
-            dmSensorPacket.batt = AONBatMonBatteryVoltageGet();
-            dmSensorPacket.adcValue = adcData;
-            dmSensorPacket.button = !PIN_getInputValue(Board_PIN_BUTTON0);
+            dmInternalTempSensorPacket.batt = (AONBatMonBatteryVoltageGet() * 125) >> 5;
+            dmInternalTempSensorPacket.temp1 = INT2FIXED((int16_t)AONBatMonTemperatureGetDegC());
+            dmInternalTempSensorPacket.temp2 = FLOAT2FIXED(convertADCToTempDouble(adcData));
 
-            sendDmPacket(dmSensorPacket, NODERADIO_MAX_RETRIES, NORERADIO_ACK_TIMEOUT_TIME_MS);
+            sendDmPacket(dmInternalTempSensorPacket, NODERADIO_MAX_RETRIES, NORERADIO_ACK_TIMEOUT_TIME_MS);
         }
 
         /* If we get an ACK from the concentrator */
@@ -336,26 +345,27 @@ static void returnRadioOperationStatus(enum NodeRadioOperationStatus result)
     Semaphore_post(radioResultSemHandle);
 }
 
-static void sendDmPacket(struct DualModeSensorPacket sensorPacket, uint8_t maxNumberOfRetries, uint32_t ackTimeoutMs)
+static void sendDmPacket(struct DualModeInternalTempSensorPacket sensorPacket, uint8_t maxNumberOfRetries, uint32_t ackTimeoutMs)
 {
     /* Set destination address in EasyLink API */
     currentRadioOperation.easyLinkTxPacket.dstAddr[0] = RADIO_CONCENTRATOR_ADDRESS;
 
     /* Copy ADC packet to payload
      * Note that the EasyLink API will implcitily both add the length byte and the destination address byte. */
-    currentRadioOperation.easyLinkTxPacket.payload[0] = dmSensorPacket.header.sourceAddress;
-    currentRadioOperation.easyLinkTxPacket.payload[1] = dmSensorPacket.header.packetType;
-    currentRadioOperation.easyLinkTxPacket.payload[2] = (dmSensorPacket.adcValue & 0xFF00) >> 8;
-    currentRadioOperation.easyLinkTxPacket.payload[3] = (dmSensorPacket.adcValue & 0xFF);
-    currentRadioOperation.easyLinkTxPacket.payload[4] = (dmSensorPacket.batt & 0xFF00) >> 8;
-    currentRadioOperation.easyLinkTxPacket.payload[5] = (dmSensorPacket.batt & 0xFF);
-    currentRadioOperation.easyLinkTxPacket.payload[6] = (dmSensorPacket.time100MiliSec & 0xFF000000) >> 24;
-    currentRadioOperation.easyLinkTxPacket.payload[7] = (dmSensorPacket.time100MiliSec & 0x00FF0000) >> 16;
-    currentRadioOperation.easyLinkTxPacket.payload[8] = (dmSensorPacket.time100MiliSec & 0xFF00) >> 8;
-    currentRadioOperation.easyLinkTxPacket.payload[9] = (dmSensorPacket.time100MiliSec & 0xFF);
-    currentRadioOperation.easyLinkTxPacket.payload[10] = dmSensorPacket.button;
+    currentRadioOperation.easyLinkTxPacket.payload[0] = dmInternalTempSensorPacket.header.sourceAddress;
+    currentRadioOperation.easyLinkTxPacket.payload[1] = dmInternalTempSensorPacket.header.packetType;
+    currentRadioOperation.easyLinkTxPacket.payload[2] = (dmInternalTempSensorPacket.temp2 & 0xFF00) >> 8;
+    currentRadioOperation.easyLinkTxPacket.payload[3] = (dmInternalTempSensorPacket.temp2 & 0xFF);
+    currentRadioOperation.easyLinkTxPacket.payload[4] = (dmInternalTempSensorPacket.batt & 0xFF00) >> 8;
+    currentRadioOperation.easyLinkTxPacket.payload[5] = (dmInternalTempSensorPacket.batt & 0xFF);
+    currentRadioOperation.easyLinkTxPacket.payload[6] = (dmInternalTempSensorPacket.temp1 & 0xFF00) >> 8;
+    currentRadioOperation.easyLinkTxPacket.payload[7] = (dmInternalTempSensorPacket.temp1 & 0xFF);
+    currentRadioOperation.easyLinkTxPacket.payload[8] = (dmInternalTempSensorPacket.time100MiliSec & 0xFF000000) >> 24;
+    currentRadioOperation.easyLinkTxPacket.payload[9] = (dmInternalTempSensorPacket.time100MiliSec & 0x00FF0000) >> 16;
+    currentRadioOperation.easyLinkTxPacket.payload[10] = (dmInternalTempSensorPacket.time100MiliSec & 0xFF00) >> 8;
+    currentRadioOperation.easyLinkTxPacket.payload[11] = (dmInternalTempSensorPacket.time100MiliSec & 0xFF);
 
-    currentRadioOperation.easyLinkTxPacket.len = sizeof(struct DualModeSensorPacket);
+    currentRadioOperation.easyLinkTxPacket.len = sizeof(struct DualModeInternalTempSensorPacket);
 
     /* Setup retries */
     currentRadioOperation.maxNumberOfRetries = maxNumberOfRetries;
@@ -433,26 +443,9 @@ static void bleAdv_eventProxyCB(void)
 */
 static void bleAdv_updateTlmCB(uint16_t *pvBatt, uint16_t *pTemp, uint32_t *pTime100MiliSec)
 {
-    uint32_t currentTicks = Clock_getTicks();
-
-    //check for wrap around
-    if (currentTicks > prevTicks)
-    {
-        //calculate time since last reading in 0.1s units
-        *pTime100MiliSec += ((currentTicks - prevTicks) * Clock_tickPeriod) / 100000;
-    }
-    else
-    {
-        //calculate time since last reading in 0.1s units
-        *pTime100MiliSec += ((prevTicks - currentTicks) * Clock_tickPeriod) / 100000;
-    }
-    prevTicks = currentTicks;
-
-    *pvBatt = AONBatMonBatteryVoltageGet();
-    // Battery voltage (bit 10:8 - integer, but 7:0 fraction)
-    *pvBatt = (*pvBatt * 125) >> 5; // convert V to mV
-
-    *pTemp = adcData;
+    *pvBatt = dmInternalTempSensorPacket.batt;
+    *pTemp = dmInternalTempSensorPacket.temp2;
+    *pTime100MiliSec = dmInternalTempSensorPacket.time100MiliSec/10;
 }
 
 /*********************************************************************
