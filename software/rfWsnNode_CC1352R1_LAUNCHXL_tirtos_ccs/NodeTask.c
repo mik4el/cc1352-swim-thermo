@@ -84,9 +84,9 @@ Task_Struct nodeTask;    /* Not static so you can see in ROV */
 static uint8_t nodeTaskStack[NODE_TASK_STACK_SIZE];
 Event_Struct nodeEvent;  /* Not static so you can see in ROV */
 static Event_Handle nodeEventHandle;
-static uint16_t latestAdcValue;
-static int32_t latestInternalTempValue;
 static uint16_t latestBatt;
+static uint16_t latestAdcValue1;
+static uint16_t latestAdcValue2;
 
 /* Pin driver handle */
 static PIN_Handle buttonPinHandle;
@@ -124,7 +124,7 @@ static BleAdv_Stats bleAdvStats = {0};
 /***** Prototypes *****/
 static void nodeTaskFunction(UArg arg0, UArg arg1);
 static void updateLcd(void);
-static void adcCallback(uint16_t adcValue);
+static void adcCallback(uint16_t adcValue1, uint16_t adcValue2);
 static void buttonCallback(PIN_Handle handle, PIN_Id pinId);
 
 /***** Function definitions *****/
@@ -182,8 +182,8 @@ static void nodeTaskFunction(UArg arg0, UArg arg1)
         System_abort("Error initializing board 3.3V domain pins\n");
     }
 
-    /* Start the SCE ADC task with 1s sample period and reacting to change in ADC value. */
-    SceAdc_init(0x00010000, NODE_ADCTASK_REPORTINTERVAL_FAST, NODE_ADCTASK_CHANGE_MASK);
+    /* Start the SCE ADC task */
+    SceAdc_init();
     SceAdc_registerAdcCallback(adcCallback);
     SceAdc_start();
 
@@ -210,7 +210,7 @@ static void nodeTaskFunction(UArg arg0, UArg arg1)
             PIN_setOutputValue(ledPinHandle, NODE_ACTIVITY_LED,!PIN_getOutputValue(NODE_ACTIVITY_LED));
 
             /* Send ADC value to concentrator */
-            NodeRadioTask_sendAdcData(latestAdcValue);
+            NodeRadioTask_sendAdcData(latestAdcValue1, latestAdcValue2);
 
             /* Update display */
             updateLcd();
@@ -235,23 +235,24 @@ static void updateLcd(void)
         nodeAddress = nodeRadioTask_getNodeAddr();
     }
 
-    double tempFormatted = FIXED2DOUBLE(FLOAT2FIXED(convertADCToTempDouble(latestAdcValue)));
-    if (tempFormatted > 128.0) {
-        tempFormatted = tempFormatted - 256.0; //display negative temperature correct
+    double temp1Formatted = FIXED2DOUBLE(FLOAT2FIXED(convertADCToTempDouble(latestAdcValue1)));
+    if (temp1Formatted > 128.0) {
+        temp1Formatted = temp1Formatted - 256.0; //display negative temperature correct
     }
-    double internalTempFormatted = latestInternalTempValue;
-    if (internalTempFormatted > 128.0) {
-        internalTempFormatted = internalTempFormatted - 256.0; //display negative temperature correct
+    double temp2Formatted = FIXED2DOUBLE(FLOAT2FIXED(convertADCToTempDouble(latestAdcValue2)));;
+    if (temp2Formatted > 128.0) {
+        temp2Formatted = temp2Formatted - 256.0; //display negative temperature correct
     }
 
     /* print to LCD */
     Display_clear(hDisplayLcd);
     Display_printf(hDisplayLcd, 0, 0, "NodeID: 0x%02x", nodeAddress);
-    Display_printf(hDisplayLcd, 1, 0, "ADC: %04d", latestAdcValue);
+    Display_printf(hDisplayLcd, 1, 0, "ADC 1: %04d", latestAdcValue1);
+    Display_printf(hDisplayLcd, 2, 0, "ADC 2: %04d", latestAdcValue2);
 
-    Display_printf(hDisplayLcd, 2, 0, "TempA: %3.3f", tempFormatted);
-    Display_printf(hDisplayLcd, 3, 0, "TempI: %3.3f", internalTempFormatted);
-    Display_printf(hDisplayLcd, 4, 0, "Batt: %i", latestBatt);
+    Display_printf(hDisplayLcd, 4, 0, "Temp1: %3.3f", temp1Formatted);
+    Display_printf(hDisplayLcd, 5, 0, "Temp2: %3.3f", temp2Formatted);
+    Display_printf(hDisplayLcd, 6, 0, "Batt: %i", latestBatt);
 
 #ifdef FEATURE_BLE_ADV
     if (advertisementType == BleAdv_AdertiserMs)
@@ -280,13 +281,13 @@ static void updateLcd(void)
 #endif
 }
 
-static void adcCallback(uint16_t adcValue)
+static void adcCallback(uint16_t adcValue1, uint16_t adcValue2)
 {
     /* Calibrate and save latest values */
     uint32_t calADC12_gain = AUXADCGetAdjustmentGain(AUXADC_REF_FIXED);
     int8_t calADC12_offset = AUXADCGetAdjustmentOffset(AUXADC_REF_FIXED);
-    latestAdcValue = AUXADCAdjustValueForGainAndOffset(adcValue, calADC12_gain, calADC12_offset);
-    latestInternalTempValue = AONBatMonTemperatureGetDegC();
+    latestAdcValue1 = AUXADCAdjustValueForGainAndOffset(adcValue1, calADC12_gain, calADC12_offset);
+    latestAdcValue2 = AUXADCAdjustValueForGainAndOffset(adcValue2, calADC12_gain, calADC12_offset);
     latestBatt = (AONBatMonBatteryVoltageGet() * 125) >> 5;
     /* Post event */
     Event_post(nodeEventHandle, NODE_EVENT_NEW_ADC_VALUE);

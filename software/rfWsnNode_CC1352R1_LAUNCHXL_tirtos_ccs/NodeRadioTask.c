@@ -110,7 +110,8 @@ static Event_Handle radioOperationEventHandle;
 Semaphore_Struct radioResultSem;  /* not static so you can see in ROV */
 static Semaphore_Handle radioResultSemHandle;
 static struct RadioOperation currentRadioOperation;
-static uint16_t adcData;
+static uint16_t adcData1;
+static uint16_t adcData2;
 static uint8_t nodeAddress = 0;
 static struct DualModeInternalTempSensorPacket dmInternalTempSensorPacket;
 
@@ -268,8 +269,8 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
             prevTicks = currentTicks;
 
             dmInternalTempSensorPacket.batt = (AONBatMonBatteryVoltageGet() * 125) >> 5;
-            dmInternalTempSensorPacket.temp1 = INT2FIXED((int16_t)AONBatMonTemperatureGetDegC());
-            dmInternalTempSensorPacket.temp2 = FLOAT2FIXED(convertADCToTempDouble(adcData));
+                        dmInternalTempSensorPacket.temp1 = FLOAT2FIXED(convertADCToTempDouble(adcData1));
+                        dmInternalTempSensorPacket.temp2 = FLOAT2FIXED(convertADCToTempDouble(adcData2));
 
             sendDmPacket(dmInternalTempSensorPacket, NODERADIO_MAX_RETRIES, NORERADIO_ACK_TIMEOUT_TIME_MS);
         }
@@ -311,7 +312,7 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
     }
 }
 
-enum NodeRadioOperationStatus NodeRadioTask_sendAdcData(uint16_t data)
+enum NodeRadioOperationStatus NodeRadioTask_sendAdcData(uint16_t data1, uint16_t data2)
 {
     enum NodeRadioOperationStatus status;
 
@@ -319,7 +320,8 @@ enum NodeRadioOperationStatus NodeRadioTask_sendAdcData(uint16_t data)
     Semaphore_pend(radioAccessSemHandle, BIOS_WAIT_FOREVER);
 
     /* Save data to send */
-    adcData = data;
+    adcData1 = data1;
+    adcData2 = data2;
 
     /* Raise RADIO_EVENT_SEND_ADC_DATA event */
     Event_post(radioOperationEventHandle, RADIO_EVENT_SEND_ADC_DATA);
