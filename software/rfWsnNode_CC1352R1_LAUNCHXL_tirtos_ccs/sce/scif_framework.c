@@ -67,22 +67,28 @@ static void scifSetMcuwusel(int index, uint32_t wuSignal);
   * \param[in]      auxIoIndex
   *     Index of the I/O pin, 0-31, using AUX mapping
   * \param[in]      ioMode
-  *     Pin I/O mode, one of the following:
-  *     - \ref AUXIOMODE_OUTPUT
-  *     - \ref AUXIOMODE_INPUT
-  *     - \ref AUXIOMODE_OPEN_DRAIN
-  *     - \ref AUXIOMODE_OPEN_DRAIN_WITH_INPUT
-  *     - \ref AUXIOMODE_OPEN_SOURCE
-  *     - \ref AUXIOMODE_OPEN_SOURCE_WITH_INPUT
-  *     - \ref AUXIOMODE_ANALOG
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_EV_OBS
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_SPIM_SCLK
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_SPIM_MOSI
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV0
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV1
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV2
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV3
-  *     - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_PULSE
+  *     Pin I/O mode, consisting of:
+  *     - Bits [31:28]
+  *         - Output drive strength
+  *             - 0 = Low (2 mA for all I/O pins)
+  *             - 1 = Medium (4 mA for all I/O pins)
+  *             - 2 = High (4 mA for normal I/O pins / 8 mA for high-drive capability I/O pins)
+  *     - Bits [27:0]
+  *         - \ref AUXIOMODE_OUTPUT
+  *         - \ref AUXIOMODE_INPUT
+  *         - \ref AUXIOMODE_OPEN_DRAIN
+  *         - \ref AUXIOMODE_OPEN_DRAIN_WITH_INPUT
+  *         - \ref AUXIOMODE_OPEN_SOURCE
+  *         - \ref AUXIOMODE_OPEN_SOURCE_WITH_INPUT
+  *         - \ref AUXIOMODE_ANALOG
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_EV_OBS
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_SPIM_SCLK
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_SPIM_MOSI
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV0
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV1
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV2
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_EV3
+  *         - \ref AUXIOMODE_PERIPH_OUTPUT_TIMER2_PULSE
   * \param[in]      pullLevel
   *     Pull level to be used when the pin is configured as input, open-drain or open-source
   *     - No pull: -1
@@ -98,11 +104,12 @@ void scifInitIo(uint32_t auxIoIndex, uint32_t ioMode, int pullLevel, uint32_t ou
     uint32_t auxAiodioBase = AUX_AIODIO0_BASE + ((auxIoIndex / 8) * (AUX_AIODIO1_BASE - AUX_AIODIO0_BASE));
 
     // Setup the AUX I/O controller. The ioMode parameter is packed as follows:
-    // - ioMode[31:24] = IOPSEL
+    // - ioMode[31:28] = Output drive strength
+    // - ioMode[27:24] = IOPSEL value
     // - ioMode[23:16] = GPIODIE value shifted down to bit 0
     // - ioMode[15:8] = IOPOE value shifted down to bit 0
     // - ioMode[7:0] = IOMODE value shifted down to bit 0
-    HWREG(auxAiodioBase + AUX_AIODIO_O_IO0PSEL + ((AUX_AIODIO_O_IO1PSEL - AUX_AIODIO_O_IO0PSEL) * auxAiodioPin)) = (ioMode >> 24) & 0xFF;
+    HWREG(auxAiodioBase + AUX_AIODIO_O_IO0PSEL + ((AUX_AIODIO_O_IO1PSEL - AUX_AIODIO_O_IO0PSEL) * auxAiodioPin)) = (ioMode >> 24) & 0x0F;
     HWREG(auxAiodioBase + AUX_AIODIO_O_IOPOE)    = (HWREG(auxAiodioBase + AUX_AIODIO_O_IOPOE)    & ~(0x01 << (auxAiodioPin)))     | (((ioMode >> 8) & 0xFF) << auxAiodioPin);
     HWREG(auxAiodioBase + AUX_AIODIO_O_IOMODE)   = (HWREG(auxAiodioBase + AUX_AIODIO_O_IOMODE)   & ~(0x03 << (2 * auxAiodioPin))) | ((ioMode & 0xFF) << (2 * auxAiodioPin));
     HWREG(auxAiodioBase + AUX_AIODIO_O_GPIODOUT) = (HWREG(auxAiodioBase + AUX_AIODIO_O_GPIODOUT) & ~(0x01 << (auxAiodioPin)))     | (outputValue << auxAiodioPin);
@@ -111,7 +118,7 @@ void scifInitIo(uint32_t auxIoIndex, uint32_t ioMode, int pullLevel, uint32_t ou
     HWREG(auxAiodioBase + AUX_AIODIO_O_GPIODIE);
 
     // Configure pull level and transfer control of the I/O pin to AUX
-    scifReinitIo(auxIoIndex, pullLevel);
+    scifReinitIo(auxIoIndex, pullLevel, ioMode >> BI_AUXIOMODE_OUTPUT_DRIVE_STRENGTH);
 
 } // scifInitIo
 
@@ -132,14 +139,19 @@ void scifInitIo(uint32_t auxIoIndex, uint32_t ioMode, int pullLevel, uint32_t ou
   *     - No pull: -1
   *     - Pull-down: 0
   *     - Pull-up: 1
+  * \param[in]      driveStrength
+  *     Output drive strength
+  *     - 0 = Low (2 mA for all I/O pins)
+  *     - 1 = Medium (4 mA for all I/O pins)
+  *     - 2 = High (4 mA for normal I/O pins / 8 mA for high-drive capability I/O pins)
   */
-void scifReinitIo(uint32_t auxIoIndex, int pullLevel) {
+void scifReinitIo(uint32_t auxIoIndex, int pullLevel, int driveStrength) {
 
     // Calculate access parameters from the AUX I/O index
     uint32_t mcuIocfgOffset = scifData.pAuxIoIndexToMcuIocfgOffsetLut[auxIoIndex];
 
     // Setup the MCU I/O controller, making the AUX I/O setup effective
-    uint32_t iocfg = IOC_IOCFG0_PORT_ID_AUX_IO;
+    uint32_t iocfg = IOC_IOCFG0_PORT_ID_AUX_IO | (driveStrength << IOC_IOCFG0_IOCURR_S);
     switch (pullLevel) {
     case -1: iocfg |= IOC_IOCFG0_PULL_CTL_DIS; break;
     case 0:  iocfg |= IOC_IOCFG0_PULL_CTL_DWN; break;
@@ -450,11 +462,12 @@ uint32_t scifGetAlertEvents(void) {
   */
 void scifClearAlertIntSource(void) {
 
-    // Clear the source
-    HWREG(AUX_EVCTL_BASE + AUX_EVCTL_O_EVTOAONFLAGSCLR) = AUX_EVCTL_EVTOAONFLAGS_SWEV1_M;
-
-    // Ensure that the source clearing has taken effect
-    while (HWREG(AUX_EVCTL_BASE + AUX_EVCTL_O_EVTOAONFLAGS) & AUX_EVCTL_EVTOAONFLAGS_SWEV1_M);
+    // Clear the source, and wait for it to take effect. The source must be cleared repeatedly in case
+    // task code calls fwGenQuickAlertInterrupt() frequently (the flag can be set again, immediately
+    // after it has been cleared here).
+    do {
+        HWREG(AUX_EVCTL_BASE + AUX_EVCTL_O_EVTOAONFLAGSCLR) = AUX_EVCTL_EVTOAONFLAGS_SWEV1_M;
+    } while (HWREG(AUX_EVCTL_BASE + AUX_EVCTL_O_EVTOAONFLAGS) & AUX_EVCTL_EVTOAONFLAGS_SWEV1_M);
 
 } // scifClearAlertIntSource
 
@@ -974,9 +987,9 @@ SCIF_RESULT_T scifSwTriggerExecutionCodeNbl(uint32_t bvTaskIds) {
 SCIF_RESULT_T scifSwTriggerEventHandlerCode(uint32_t taskId, uint32_t triggerIndex) {
 
     // Calculate the PROGWUnCFG register address
+    int triggerBase = (scifData.taskBaseEvTrigIndexLut >> (2 * taskId)) & 0x3;
     uint16_t progwucfgManTrigReg = (uint16_t) ((AUX_SYSIF_BASE + AUX_SYSIF_O_PROGWU1CFG) +
-                                               ((scifData.taskBaseEvTrigIndexLut >> (2 * taskId)) & 0x3) +
-                                               (triggerIndex * sizeof(uint32_t)));
+                                               ((triggerBase + triggerIndex) * sizeof(uint32_t)));
 
     // Generate a trigger unless one is already pending
     uint32_t key = scifOsalEnterCriticalSection();
@@ -1051,4 +1064,4 @@ uint16_t scifGetActiveTaskIds(void) {
 //@}
 
 
-// Generated on 2018-05-16 11:53:53.980
+// Generated by DESKTOP-SB0S8NL at 2019-06-12 23:58:03.123
