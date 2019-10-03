@@ -44,8 +44,6 @@
 
 /* TI-RTOS Header files */ 
 #include <ti/drivers/PIN.h>
-#include <ti/display/Display.h>
-#include <ti/display/DisplayExt.h>
 
 /* Board Header files */
 #include "Board.h"
@@ -88,34 +86,16 @@ static uint16_t latestBatt;
 static uint16_t latestAdcValue1;
 static uint16_t latestAdcValue2;
 
-/* Pin driver handle */
-static PIN_Handle buttonPinHandle;
-static PIN_Handle ledPinHandle;
-static PIN_State buttonPinState;
-static PIN_State ledPinState;
+/* Pins */
+static PIN_Handle pinHandle;
+static PIN_State pinState;
 
-/* Display driver handles */
-static Display_Handle hDisplayLcd;
-
-/* Enable the 3.3V power domain used by the LCD */
 PIN_Config pinTable[] = {
-    NODE_ACTIVITY_LED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
-
-/*
- * Application button pin configuration table:
- *   - Buttons interrupts are configured to trigger on falling edge.
- */
-PIN_Config buttonPinTable[] = {
-    Board_PIN_BUTTON0  | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
-#ifdef FEATURE_BLE_ADV
-    Board_PIN_BUTTON1  | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
-#endif
-    PIN_TERMINATE
-};
-
-static uint8_t nodeAddress = 0;
+                         CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_1 should be default low */
+                         CC1352R1_SWIMTHERMO_T_ON_2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_2 should be default low */
+                         CC1352R1_SWIMTHERMO_SWITCH  | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
+                         PIN_TERMINATE
+                        };
 
 #ifdef FEATURE_BLE_ADV
 static BleAdv_Stats bleAdvStats = {0};
@@ -123,7 +103,6 @@ static BleAdv_Stats bleAdvStats = {0};
 
 /***** Prototypes *****/
 static void nodeTaskFunction(UArg arg0, UArg arg1);
-static void updateLcd(void);
 static void adcCallback(uint16_t adcValue1, uint16_t adcValue2);
 static void buttonCallback(PIN_Handle handle, PIN_Id pinId);
 
@@ -153,48 +132,18 @@ void NodeTask_advStatsCB(BleAdv_Stats stats)
 
 static void nodeTaskFunction(UArg arg0, UArg arg1)
 {
-    /* Initialize display and try to open both UART and LCD types of display. */
-    Display_Params params;
-    Display_Params_init(&params);
-    params.lineClearMode = DISPLAY_CLEAR_BOTH;
-
-    /* Open both an available LCD display and an UART display.
-     * Whether the open call is successful depends on what is present in the
-     * Display_config[] array of the board file.
-     *
-     * Note that for SensorTag evaluation boards combined with the SHARP96x96
-     * Watch DevPack, there is a pin conflict with UART such that one must be
-     * excluded, and UART is preferred by default. To display on the Watch
-     * DevPack, add the precompiler define BOARD_DISPLAY_EXCLUDE_UART.
-     */
-    hDisplayLcd = Display_open(Display_Type_LCD, &params);
-
-    /* Check if the selected Display type was found and successfully opened */
-    if (hDisplayLcd)
-    {
-        Display_printf(hDisplayLcd, 0, 0, "Waiting for ADC...");
-    }
-
-    /* Open LED pins */
-    ledPinHandle = PIN_open(&ledPinState, pinTable);
-    if (!ledPinHandle)
-    {
-        System_abort("Error initializing board 3.3V domain pins\n");
-    }
-
     /* Start the SCE ADC task */
     SceAdc_init();
     SceAdc_registerAdcCallback(adcCallback);
     SceAdc_start();
 
-    buttonPinHandle = PIN_open(&buttonPinState, buttonPinTable);
-    if (!buttonPinHandle)
-    {
-        System_abort("Error initializing button pins\n");
+    pinHandle = PIN_open(&pinState, pinTable);
+    if(!pinHandle) {
+        System_abort("Error initializing pins\n");
     }
 
     /* Setup callback for button pins */
-    if (PIN_registerIntCb(buttonPinHandle, &buttonCallback) != 0)
+    if (PIN_registerIntCb(pinHandle, &buttonCallback) != 0)
     {
         System_abort("Error registering button callback function");
     }
@@ -206,79 +155,12 @@ static void nodeTaskFunction(UArg arg0, UArg arg1)
 
         /* If new ADC value, send this data */
         if (events & NODE_EVENT_NEW_ADC_VALUE) {
-            /* Toggle activity LED */
-            PIN_setOutputValue(ledPinHandle, NODE_ACTIVITY_LED,!PIN_getOutputValue(NODE_ACTIVITY_LED));
-
             /* Send ADC value to concentrator */
             NodeRadioTask_sendAdcData(latestAdcValue1, latestAdcValue2);
 
-            /* Update display */
-            updateLcd();
         }
-        /* If new ADC value, send this data */
-        if (events & NODE_EVENT_UPDATE_LCD) {
-            /* update display */
-            updateLcd();
-        }
-    }
-}
 
-static void updateLcd(void)
-{
-#ifdef FEATURE_BLE_ADV
-    char advMode[16] = {0};
-#endif
-
-    /* get node address if not already done */
-    if (nodeAddress == 0)
-    {
-        nodeAddress = nodeRadioTask_getNodeAddr();
     }
-
-    double temp1Formatted = FIXED2DOUBLE(FLOAT2FIXED(convertADCToTempDouble(latestAdcValue1)));
-    if (temp1Formatted > 128.0) {
-        temp1Formatted = temp1Formatted - 256.0; //display negative temperature correct
-    }
-    double temp2Formatted = FIXED2DOUBLE(FLOAT2FIXED(convertADCToTempDouble(latestAdcValue2)));;
-    if (temp2Formatted > 128.0) {
-        temp2Formatted = temp2Formatted - 256.0; //display negative temperature correct
-    }
-
-    /* print to LCD */
-    Display_clear(hDisplayLcd);
-    Display_printf(hDisplayLcd, 0, 0, "NodeID: 0x%02x", nodeAddress);
-    Display_printf(hDisplayLcd, 1, 0, "ADC 1: %04d", latestAdcValue1);
-    Display_printf(hDisplayLcd, 2, 0, "ADC 2: %04d", latestAdcValue2);
-
-    Display_printf(hDisplayLcd, 4, 0, "Temp1: %3.3f", temp1Formatted);
-    Display_printf(hDisplayLcd, 5, 0, "Temp2: %3.3f", temp2Formatted);
-    Display_printf(hDisplayLcd, 6, 0, "Batt: %i", latestBatt);
-
-#ifdef FEATURE_BLE_ADV
-    if (advertisementType == BleAdv_AdertiserMs)
-    {
-         strncpy(advMode, "BLE MS", 6);
-    }
-    else if (advertisementType == BleAdv_AdertiserUrl)
-    {
-         strncpy(advMode, "Eddystone URL", 13);
-    }
-    else if (advertisementType == BleAdv_AdertiserUid)
-    {
-         strncpy(advMode, "Eddystone UID", 13);
-    }
-    else
-    {
-         strncpy(advMode, "None", 4);
-    }
-
-    /* print to LCD */
-    Display_printf(hDisplayLcd, 6, 0, "Adv Mode:");
-    Display_printf(hDisplayLcd, 7, 0, "%s", advMode);
-    Display_printf(hDisplayLcd, 8, 0, "Adv successful | failed");
-    Display_printf(hDisplayLcd, 9, 0, "%04d | %04d",
-                   bleAdvStats.successCnt + bleAdvStats.failCnt);
-#endif
 }
 
 static void adcCallback(uint16_t adcValue1, uint16_t adcValue2)
@@ -314,9 +196,6 @@ static void buttonCallback(PIN_Handle handle, PIN_Id pinId)
 
         //Set advertisement type
         BleAdv_setAdvertiserType(advertisementType);
-
-        /* update display */
-        Event_post(nodeEventHandle, NODE_EVENT_UPDATE_LCD);
     }
 #endif
 }
