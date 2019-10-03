@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<project name="LMT70 simple ADC cc1352" version="2.4.0.793">
+    <desc><![CDATA[]]></desc>
+    <pattr name="Apply default power mode">0</pattr>
+    <pattr name="Board">CC1352R1 LaunchPad</pattr>
+    <pattr name="Chip name">CC1352R1F3</pattr>
+    <pattr name="Chip package">QFN48 7x7 RGZ</pattr>
+    <pattr name="Chip revision">C</pattr>
+    <pattr name="Clock in active mode">0</pattr>
+    <pattr name="Code prefix"></pattr>
+    <pattr name="Default power mode">0</pattr>
+    <pattr name="Operating system">TI-RTOS</pattr>
+    <pattr name="Output directory">./</pattr>
+    <pattr name="RTC tick interval (16.16 format)">2000</pattr>
+    <pattr name="Run-time logging UART RX pin"></pattr>
+    <pattr name="Run-time logging UART TX pin"></pattr>
+    <task name="Simple LMT70 ADC cc1352">
+        <desc><![CDATA[Sampling the LMT70s on DIO7 and toggle between T_ON1 and T_ON2 on the CC1352 SWIMTHERMO according to TI application note.]]></desc>
+        <tattr name="BIN_COUNT" desc="Number of ADC value bins" type="dec" content="const" scope="task" min="0" max="65535">5</tattr>
+        <tattr name="THRESHOLD_COUNT" desc="Number of bin thresholds" type="expr" content="const" scope="task" min="0" max="65535">BIN_COUNT + 1</tattr>
+        <tattr name="output.adcValue1" type="expr" content="struct" scope="task" min="0" max="65535">0</tattr>
+        <tattr name="output.adcValue2" type="expr" content="struct" scope="task" min="0" max="65535">0</tattr>
+        <resource_ref name="ADC" enabled="1"/>
+        <resource_ref name="AON Domain Functionality" enabled="0"/>
+        <resource_ref name="Accumulator-Based Math" enabled="0"/>
+        <resource_ref name="Analog Open-Drain Pins" enabled="0"/>
+        <resource_ref name="Analog Open-Source Pins" enabled="0"/>
+        <resource_ref name="Analog Pins" enabled="1">
+            <io_usage name="LMT70_IN" label="Input for LMT70">
+                <uattr name="Pin count">0</uattr>
+                <uattr name="Pin/0000">DIO25</uattr>
+                <uattr name="Pin/0001"></uattr>
+                <uattr name="Pin/0002"></uattr>
+                <uattr name="Pin/0003"></uattr>
+                <uattr name="Pin/0004"></uattr>
+                <uattr name="Pin/0005"></uattr>
+                <uattr name="Pin/0006"></uattr>
+                <uattr name="Pin/0007"></uattr>
+            </io_usage>
+        </resource_ref>
+        <resource_ref name="COMPA" enabled="0"/>
+        <resource_ref name="COMPA Event Trigger" enabled="0"/>
+        <resource_ref name="COMPB" enabled="0"/>
+        <resource_ref name="COMPB Event Trigger" enabled="0"/>
+        <resource_ref name="Delay Insertion" enabled="1"/>
+        <resource_ref name="Differential Output Pins" enabled="0"/>
+        <resource_ref name="Digital Input Pins" enabled="0"/>
+        <resource_ref name="Digital Open-Drain Pins" enabled="0"/>
+        <resource_ref name="Digital Open-Source Pins" enabled="0"/>
+        <resource_ref name="Digital Output Pins" enabled="1">
+            <io_usage name="T_ON1" label="Turn on LMT70 1">
+                <uattr name="Configuration on uninitialization">1</uattr>
+                <uattr name="Output drive strength">0</uattr>
+                <uattr name="Output value on initialization">0</uattr>
+                <uattr name="Pin count">0</uattr>
+                <uattr name="Pin/0000">DIO26</uattr>
+                <uattr name="Pin/0001"></uattr>
+                <uattr name="Pin/0002"></uattr>
+                <uattr name="Pin/0003"></uattr>
+                <uattr name="Pin/0004"></uattr>
+                <uattr name="Pin/0005"></uattr>
+                <uattr name="Pin/0006"></uattr>
+                <uattr name="Pin/0007"></uattr>
+                <uattr name="Pin/0008"></uattr>
+                <uattr name="Pin/0009"></uattr>
+                <uattr name="Pin/0010"></uattr>
+                <uattr name="Pin/0011"></uattr>
+                <uattr name="Pin/0012"></uattr>
+                <uattr name="Pin/0013"></uattr>
+                <uattr name="Pin/0014"></uattr>
+                <uattr name="Pin/0015"></uattr>
+                <uattr name="Pin/0016"></uattr>
+                <uattr name="Pin/0017"></uattr>
+                <uattr name="Pin/0018"></uattr>
+                <uattr name="Pin/0019"></uattr>
+                <uattr name="Pin/0020"></uattr>
+                <uattr name="Pin/0021"></uattr>
+                <uattr name="Pin/0022"></uattr>
+                <uattr name="Pin/0023"></uattr>
+                <uattr name="Pin/0024"></uattr>
+                <uattr name="Pin/0025"></uattr>
+                <uattr name="Pin/0026"></uattr>
+                <uattr name="Pin/0027"></uattr>
+                <uattr name="Pin/0028"></uattr>
+                <uattr name="Pin/0029"></uattr>
+                <uattr name="Pin/0030"></uattr>
+                <uattr name="Pin/0031"></uattr>
+            </io_usage>
+            <io_usage name="T_ON2" label="Turn on LMT70 2">
+                <uattr name="Configuration on uninitialization">1</uattr>
+                <uattr name="Output drive strength">0</uattr>
+                <uattr name="Output value on initialization">0</uattr>
+                <uattr name="Pin count">0</uattr>
+                <uattr name="Pin/0000">DIO27</uattr>
+                <uattr name="Pin/0001"></uattr>
+                <uattr name="Pin/0002"></uattr>
+                <uattr name="Pin/0003"></uattr>
+                <uattr name="Pin/0004"></uattr>
+                <uattr name="Pin/0005"></uattr>
+                <uattr name="Pin/0006"></uattr>
+                <uattr name="Pin/0007"></uattr>
+                <uattr name="Pin/0008"></uattr>
+                <uattr name="Pin/0009"></uattr>
+                <uattr name="Pin/0010"></uattr>
+                <uattr name="Pin/0011"></uattr>
+                <uattr name="Pin/0012"></uattr>
+                <uattr name="Pin/0013"></uattr>
+                <uattr name="Pin/0014"></uattr>
+                <uattr name="Pin/0015"></uattr>
+                <uattr name="Pin/0016"></uattr>
+                <uattr name="Pin/0017"></uattr>
+                <uattr name="Pin/0018"></uattr>
+                <uattr name="Pin/0019"></uattr>
+                <uattr name="Pin/0020"></uattr>
+                <uattr name="Pin/0021"></uattr>
+                <uattr name="Pin/0022"></uattr>
+                <uattr name="Pin/0023"></uattr>
+                <uattr name="Pin/0024"></uattr>
+                <uattr name="Pin/0025"></uattr>
+                <uattr name="Pin/0026"></uattr>
+                <uattr name="Pin/0027"></uattr>
+                <uattr name="Pin/0028"></uattr>
+                <uattr name="Pin/0029"></uattr>
+                <uattr name="Pin/0030"></uattr>
+                <uattr name="Pin/0031"></uattr>
+            </io_usage>
+        </resource_ref>
+        <resource_ref name="Dynamic Power Control" enabled="0"/>
+        <resource_ref name="GPIO Event Trigger" enabled="0"/>
+        <resource_ref name="I2C Master" enabled="0">
+            <rattr name="SCL frequency">0</rattr>
+            <rattr name="SCL stretch timeout">1</rattr>
+            <io_usage>
+                <uattr name="SCL pin/0000"></uattr>
+                <uattr name="SDA pin/0000"></uattr>
+            </io_usage>
+        </resource_ref>
+        <resource_ref name="ISRC" enabled="0"/>
+        <resource_ref name="Math and Logic" enabled="0"/>
+        <resource_ref name="Multi-Buffered Output Data Exchange" enabled="0">
+            <rattr name="Buffer count">2</rattr>
+            <rattr name="Indicate overflow at buffer check">1</rattr>
+            <rattr name="Indicate overflow at buffer switch">0</rattr>
+            <rattr name="Prevent overflow at buffer switch">1</rattr>
+        </resource_ref>
+        <resource_ref name="Peripheral Sharing" enabled="0"/>
+        <resource_ref name="Pulse Counter" enabled="0"/>
+        <resource_ref name="RTC Multi-Event Capture" enabled="0"/>
+        <resource_ref name="RTC-Based Execution Scheduling" enabled="1"/>
+        <resource_ref name="Reference DAC" enabled="0"/>
+        <resource_ref name="Run-Time Logging" enabled="0"/>
+        <resource_ref name="SPI Chip Select" enabled="0"/>
+        <resource_ref name="SPI Data Transfer" enabled="0">
+            <rattr name="Bit rate">0</rattr>
+            <rattr name="MISO configuration when inactive">-1</rattr>
+            <rattr name="MOSI configuration on initialization">0</rattr>
+            <rattr name="MOSI configuration on uninitialization">0</rattr>
+            <rattr name="SCLK configuration on initialization">0</rattr>
+            <rattr name="SCLK configuration on uninitialization">0</rattr>
+            <io_usage>
+                <uattr name="MISO pin/0000"></uattr>
+                <uattr name="MOSI pin/0000"></uattr>
+                <uattr name="SCLK pin/0000"></uattr>
+            </io_usage>
+        </resource_ref>
+        <resource_ref name="Signal Observation" enabled="0"/>
+        <resource_ref name="System CPU Alert" enabled="1"/>
+        <resource_ref name="System Event Trigger" enabled="0"/>
+        <resource_ref name="TDC" enabled="0"/>
+        <resource_ref name="Timer 0" enabled="0"/>
+        <resource_ref name="Timer 0 Event Trigger" enabled="0"/>
+        <resource_ref name="Timer 1" enabled="0"/>
+        <resource_ref name="Timer 1 Event Trigger" enabled="0"/>
+        <resource_ref name="Timer 2" enabled="0"/>
+        <resource_ref name="Timer 2 Event Trigger" enabled="0"/>
+        <resource_ref name="UART Emulator" enabled="0">
+            <rattr name="RX buffer size">64</rattr>
+            <rattr name="Required idle period before enabling RX">11</rattr>
+            <rattr name="TX buffer size">64</rattr>
+            <io_usage>
+                <uattr name="RX pin/0000"></uattr>
+                <uattr name="TX pin/0000"></uattr>
+            </io_usage>
+        </resource_ref>
+        <sccode name="event0" init_power_mode="0"><![CDATA[]]></sccode>
+        <sccode name="event1" init_power_mode="0"><![CDATA[]]></sccode>
+        <sccode name="event2" init_power_mode="0"><![CDATA[]]></sccode>
+        <sccode name="event3" init_power_mode="0"><![CDATA[]]></sccode>
+        <sccode name="execute" init_power_mode="0"><![CDATA[// Turn on T_ON1
+gpioSetOutput(AUXIO_O_T_ON1);
+
+// Wait for 1ms till LMT70 1 settles
+fwDelayUs(1000);
+
+//Disable scaling to use internal reference of 1.4785V
+adcDisableInputScaling();
+
+// Enable the ADC
+adcEnableSync(ADC_REF_FIXED, ADC_SAMPLE_TIME_10P9_MS, ADC_TRIGGER_MANUAL);
+
+// Sample the LMT70 temp sensor 1
+adcSelectGpioInput(AUXIO_A_LMT70_IN); //DIO_7
+
+// Sample the ADC
+S16 adcValue_n1;
+S16 adcValue_n2;
+S16 adcValue_n3;
+S16 median;
+
+adcGenManualTrigger();
+adcReadFifo(adcValue_n1);
+adcGenManualTrigger();
+adcReadFifo(adcValue_n2);
+adcGenManualTrigger();
+adcReadFifo(adcValue_n3);
+
+if (adcValue_n1>adcValue_n2) {
+    if (adcValue_n2>adcValue_n3) {
+        median = adcValue_n2;
+    } else {
+        if (adcValue_n3>adcValue_n1) {
+            median = adcValue_n1;
+        } else {
+            median = adcValue_n3;
+        }
+    }
+} else {
+    if (adcValue_n2<adcValue_n3) {
+        median = adcValue_n2;
+    } else {
+        if (adcValue_n3<adcValue_n1) {
+            median = adcValue_n1;
+        } else {
+            median = adcValue_n3;
+        }
+    }
+}
+output.adcValue1 = median;
+
+// Switch to T_ON2
+gpioClearOutput(AUXIO_O_T_ON1);
+gpioSetOutput(AUXIO_O_T_ON2);
+
+// Wait for 1ms till LMT70 2 settles
+fwDelayUs(1000);
+
+
+adcGenManualTrigger();
+adcReadFifo(adcValue_n1);
+adcGenManualTrigger();
+adcReadFifo(adcValue_n2);
+adcGenManualTrigger();
+adcReadFifo(adcValue_n3);
+
+if (adcValue_n1>adcValue_n2) {
+    if (adcValue_n2>adcValue_n3) {
+        median = adcValue_n2;
+    } else {
+        if (adcValue_n3>adcValue_n1) {
+            median = adcValue_n1;
+        } else {
+            median = adcValue_n3;
+        }
+    }
+} else {
+    if (adcValue_n2<adcValue_n3) {
+        median = adcValue_n2;
+    } else {
+        if (adcValue_n3<adcValue_n1) {
+            median = adcValue_n1;
+        } else {
+            median = adcValue_n3;
+        }
+    }
+}
+output.adcValue2 = median;
+
+gpioClearOutput(AUXIO_O_T_ON2);
+
+// Disable the ADC
+adcDisable();
+
+fwGenAlertInterrupt();
+
+// Schedule the next execution
+fwScheduleTask(1);]]></sccode>
+        <sccode name="initialize" init_power_mode="0"><![CDATA[// Schedule the first execution
+fwScheduleTask(1);]]></sccode>
+        <sccode name="terminate" init_power_mode="0"><![CDATA[]]></sccode>
+        <event_trigger active_count="1">0,1,2,3</event_trigger>
+        <tt_iter>run_execute</tt_iter>
+        <tt_struct></tt_struct>
+        <rtl_struct></rtl_struct>
+        <rtl_task_sel en="1" struct_log_list="output"/>
+    </task>
+</project>
