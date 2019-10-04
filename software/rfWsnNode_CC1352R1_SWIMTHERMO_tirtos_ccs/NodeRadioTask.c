@@ -119,9 +119,6 @@ static struct DualModeInternalTempSensorPacket dmInternalTempSensorPacket;
 /* previous Tick count used to calculate uptime */
 static uint32_t prevTicks;
 
-/* Pin driver handle */
-extern PIN_Handle ledPinHandle;
-
 /***** Prototypes *****/
 static void nodeRadioTaskFunction(UArg arg0, UArg arg1);
 static void returnRadioOperationStatus(enum NodeRadioOperationStatus status);
@@ -132,7 +129,6 @@ static void rxDoneCallback(EasyLink_RxPacket * rxPacket, EasyLink_Status status)
 #ifdef FEATURE_BLE_ADV
 static void bleAdv_eventProxyCB(void);
 static void bleAdv_updateTlmCB(uint16_t *pVbatt, uint16_t *pTemp, uint32_t *pTime100MiliSec);
-static void bleAdv_updateMsButtonCB(uint8_t *pButton);
 #endif
 
 /***** Function definitions *****/
@@ -380,10 +376,6 @@ static void sendDmPacket(struct DualModeInternalTempSensorPacket sensorPacket, u
     {
         System_abort("EasyLink_transmit failed");
     }
-#if defined(Board_DIO30_SWPWR)
-    /* this was a blocking call, so Tx is now complete. Turn off the RF switch power */
-    PIN_setOutputValue(blePinHandle, Board_DIO30_SWPWR, 0);
-#endif
 
     /* Enter RX */
     if (EasyLink_receiveAsync(rxDoneCallback, 0) != EasyLink_Status_Success)
@@ -399,10 +391,6 @@ static void resendPacket(void)
     {
         System_abort("EasyLink_transmit failed");
     }
-#if defined(Board_DIO30_SWPWR)
-    /* this was a blocking call, so Tx is now complete. Turn off the RF switch power */
-    PIN_setOutputValue(blePinHandle, Board_DIO30_SWPWR, 0);
-#endif
 
     /* Enter RX and wait for ACK with timeout */
     if (EasyLink_receiveAsync(rxDoneCallback, 0) != EasyLink_Status_Success)
@@ -449,30 +437,11 @@ static void bleAdv_updateTlmCB(uint16_t *pvBatt, uint16_t *pTemp, uint32_t *pTim
     *pTemp = dmInternalTempSensorPacket.temp2;
     *pTime100MiliSec = dmInternalTempSensorPacket.time100MiliSec/10;
 }
-
-/*********************************************************************
-* @fn      bleAdv_updateMsButtonCB
-*
-* @brief Callback to update the MS button data
-*
-* @param pButton Button state to be added to MS beacon Frame
-*
-* @return  None
-*/
-static void bleAdv_updateMsButtonCB(uint8_t *pButton)
-{
-    *pButton = !PIN_getInputValue(Board_PIN_BUTTON0);
-}
 #endif
 
 static void rxDoneCallback(EasyLink_RxPacket * rxPacket, EasyLink_Status status)
 {
     struct PacketHeader* packetHeader;
-
-#if defined(Board_DIO30_SWPWR)
-    /* Rx is now complete. Turn off the RF switch power */
-    PIN_setOutputValue(blePinHandle, Board_DIO30_SWPWR, 0);
-#endif
 
     /* If this callback is called because of a packet received */
     if (status == EasyLink_Status_Success)

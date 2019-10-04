@@ -63,18 +63,6 @@
 
 #define NODE_EVENT_ALL                  0xFFFFFFFF
 #define NODE_EVENT_NEW_ADC_VALUE    (uint32_t)(1 << 0)
-#define NODE_EVENT_UPDATE_LCD       (uint32_t)(1 << 1)
-
-/* A change mask of 0xFF0 means that changes in the lower 4 bits does not trigger a wakeup. */
-#define NODE_ADCTASK_CHANGE_MASK                    0xFF0
-
-/* Minimum slow Report interval is 50s (in units of samplingTime)*/
-#define NODE_ADCTASK_REPORTINTERVAL_SLOW                50
-/* Minimum fast Report interval is 1s (in units of samplingTime) for 30s*/
-#define NODE_ADCTASK_REPORTINTERVAL_FAST                5
-#define NODE_ADCTASK_REPORTINTERVAL_FAST_DURIATION_MS   30000
-
-#define NUM_EDDYSTONE_URLS      5
 
 /***** Variable declarations *****/
 static Task_Params nodeTaskParams;
@@ -202,10 +190,5 @@ static void buttonCallback(PIN_Handle handle, PIN_Id pinId)
 
 #ifdef FEATURE_BLE_ADV
 void rfSwitchCallback(RF_Handle h, RF_ClientEvent event, void* arg){
-#if defined(Board_DIO30_SWPWR)
-    //Turn on switch
-    PIN_setOutputValue(blePinHandle, Board_DIO30_SWPWR, 1);
-#endif
-    PIN_setOutputValue(blePinHandle, RF_SWITCH_PIN, 1);
 }
 #endif
