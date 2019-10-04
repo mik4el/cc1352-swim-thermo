@@ -1,7 +1,5 @@
----
-# display
-
----
+# CC1352 Swimthermo: display_CC1352R1_LAUNCHXL_tirtos_ccs
+Same as the official TI example display_CC1352R1_LAUNCHXL_tirtos_ccs.
 
 ## Example Summary
 

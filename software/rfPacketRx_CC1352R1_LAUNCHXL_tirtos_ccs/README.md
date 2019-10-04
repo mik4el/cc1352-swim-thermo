@@ -1,3 +1,6 @@
+# CC1352 Swimthermo: rfPacketRx_CC1352R1_LAUNCHXL_tirtos_ccs
+Same as the official rfPacketRx_CC1352R1_LAUNCHXL_tirtos_ccs example but verified to work with rfPacketTx_CC1352R1_SWIMTHERMO_tirtos_ccs.
+
 Example Summary
 ---------------
 The Packet RX example illustrates how to do simple packet RX using the

@@ -1,3 +1,6 @@
+# CC1352 Swimthermo: rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs
+Same as the official TI example rfEchoRx_CC1352R1_LAUNCHXL_tirtos_ccs but verified to work with rfEchoTx_CC1352R1_LAUNCHXL_tirtos_ccs.
+
 Example Summary
 ---------------
 In this example you will learn how to setup the radio to do bi-directional 

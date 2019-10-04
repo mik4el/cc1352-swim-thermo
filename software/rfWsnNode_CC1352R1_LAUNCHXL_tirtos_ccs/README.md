@@ -1,3 +1,11 @@
+# CC1352 Swimthermo: rfWsnNode_CC1352R1_LAUNCHXL_tirtos_ccs
+Based of the rfWsnNode_CC1352R1_LAUNCHXL_tirtos_ccs example merged with https://github.com/mik4el/cc1350-swim-thermo/tree/master/software/rfWsnNodeBleAdv_CC1350_LAUNCHXL_tirtos_ccs. Works with e.g. https://github.com/mik4el/cc1350-swim-thermo/tree/master/software/rfWsnConcentrator_CC1350_LAUNCHXL_tirtos_ccs.
+
+Pins used for the SCE program to read the LMT70:
+* DIO7: LMT70 TAO
+* DIO26: LMT70 1 T_ON
+* DIO27: LMT70 2 T_ON 
+
 ## Example Summary
 
 The WSN Node example illustrates how to create a Wireless Sensor
