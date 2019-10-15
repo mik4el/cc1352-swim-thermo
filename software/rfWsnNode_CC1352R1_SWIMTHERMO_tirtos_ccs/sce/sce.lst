@@ -376,7 +376,7 @@
                pFwTaskExecuteFuncTable:
 00a0 ---- 00b3                         dw          #simpleLmt70AdcCc1352/execute
                pFwTaskTerminateFuncTable:
-00a1 ---- 0117                         dw          #simpleLmt70AdcCc1352/terminate
+00a1 ---- 0119                         dw          #simpleLmt70AdcCc1352/terminate
 
                ; Run-time logging log requests and masks, one bit for each struct, one word for each task
                pRtlTaskLogReqTable:
@@ -435,7 +435,7 @@
                simpleLmt70AdcCc1352/execute:
                ;? // Turn on T_ON1
                ;? gpioSetOutput(AUXIO_O_T_ON1);
-00b3 ---- 77bc                         iobset      #(23 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (23 >> 3))]
+00b3 ---- 74bb                         iobset      #(12 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (12 >> 3))]
                ;?
                ;? // Wait for 1ms till LMT70 1 settles
                ;? fwDelayUs(1000);
@@ -446,7 +446,7 @@
                ;?
                ;? //Disable scaling to use internal reference of 1.4785V
                ;? adcDisableInputScaling();
-00b9 ---- 1518                         jsr         AdcDisableInputScaling
+00b9 ---- 151a                         jsr         AdcDisableInputScaling
                ;?
                ;? // Enable the ADC
                ;? adcEnableSync(ADC_REF_FIXED, ADC_SAMPLE_TIME_10P9_MS, ADC_TRIGGER_MANUAL);
@@ -457,9 +457,9 @@
 00be ---- 8b9f                         out         R0, [#IOP_ADISET_ADCREF]
 00bf 863f 0301                         ld          R0, #((63 << 8) | 0x0001)
 00c1 ---- 6467                         iobset      #IOB_SYSIF_ADCCLKCTL_REQ, [#IOP_SYSIF_ADCCLKCTL]
-               /id0121:
+               /id0120:
 00c2 ---- 2567                         iobtst      #IOB_SYSIF_ADCCLKCTL_ACK, [#IOP_SYSIF_ADCCLKCTL]
-00c3 ---- a6fe                         biob0       /id0121
+00c3 ---- a6fe                         biob0       /id0120
 00c4 ---- 8b8e                         out         R0, [#IOP_ANAIF_ADCCTL]
 00c5 ---- 0078                         ld          R0, #BV_ADI16_ADC_SMPL_CYCLE_EXP
 00c6 ---- 8ba6                         out         R0, [#IOP_ADICLR_ADC]
@@ -470,9 +470,9 @@
 00cb ---- 8b9e                         out         R0, [#IOP_ADISET_ADC]
                ;?
                ;? // Sample the LMT70 temp sensor 1
-               ;? adcSelectGpioInput(AUXIO_A_LMT70_IN); //DIO_7
-00cc ---- 7018                         ld          R7, #24
-00cd ---- 151c                         jsr         AdccompbSelectGpioInput
+               ;? adcSelectGpioInput(AUXIO_A_TAO_1);
+00cc ---- 7019                         ld          R7, #25
+00cd ---- 151e                         jsr         AdccompbSelectGpioInput
                ;?
                ;? // Sample the ADC
                ;? S16 adcValue_n1;
@@ -498,158 +498,162 @@
                ;?
                ;? if (adcValue_n1>adcValue_n2) {
 00d7 ---- 8d29                         cmp         R0, R1
-00d8 ---- fe09                         bles        /id0129
+00d8 ---- fe09                         bles        /id0128
                ;?     if (adcValue_n2>adcValue_n3) {
 00d9 ---- 9d2a                             cmp         R1, R2
-00da ---- fe02                             bles        /id0133
+00da ---- fe02                             bles        /id0132
                ;?         median = adcValue_n2;
 00db ---- 8d41                                 ld          R0, R1
                ;?     } else {
-00dc ---- 04e1                             jmp         /id0136
-               /id0133:
+00dc ---- 04e1                             jmp         /id0135
+               /id0132:
                ;?         if (adcValue_n3>adcValue_n1) {
 00dd ---- ad28                                 cmp         R2, R0
-00de ---- fe01                                 bles        /id0138
+00de ---- fe01                                 bles        /id0137
                ;?             median = adcValue_n1;
                ;?         } else {
-00df ---- 04e1                                 jmp         /id0141
-               /id0138:
+00df ---- 04e1                                 jmp         /id0140
+               /id0137:
                ;?             median = adcValue_n3;
 00e0 ---- 8d42                                     ld          R0, R2
                ;?         }
-               /id0141:
+               /id0140:
                ;?     }
-               /id0136:
+               /id0135:
                ;? } else {
-00e1 ---- 04ea                         jmp         /id0132
-               /id0129:
+00e1 ---- 04ea                         jmp         /id0131
+               /id0128:
                ;?     if (adcValue_n2<adcValue_n3) {
 00e2 ---- 9d2a                             cmp         R1, R2
-00e3 ---- e602                             bges        /id0144
+00e3 ---- e602                             bges        /id0143
                ;?         median = adcValue_n2;
 00e4 ---- 8d41                                 ld          R0, R1
                ;?     } else {
-00e5 ---- 04ea                             jmp         /id0147
-               /id0144:
+00e5 ---- 04ea                             jmp         /id0146
+               /id0143:
                ;?         if (adcValue_n3<adcValue_n1) {
 00e6 ---- ad28                                 cmp         R2, R0
-00e7 ---- e601                                 bges        /id0149
+00e7 ---- e601                                 bges        /id0148
                ;?             median = adcValue_n1;
                ;?         } else {
-00e8 ---- 04ea                                 jmp         /id0152
-               /id0149:
+00e8 ---- 04ea                                 jmp         /id0151
+               /id0148:
                ;?             median = adcValue_n3;
 00e9 ---- 8d42                                     ld          R0, R2
                ;?         }
-               /id0152:
+               /id0151:
                ;?     }
-               /id0147:
+               /id0146:
                ;? }
-               /id0132:
+               /id0131:
                ;? output.adcValue1 = median;
 00ea ---- 0cae                         st          R0, [#simpleLmt70AdcCc1352/output/adcValue1]
                ;?
                ;? // Switch to T_ON2
                ;? gpioClearOutput(AUXIO_O_T_ON1);
-00eb ---- 57bc                         iobclr      #(23 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (23 >> 3))]
+00eb ---- 54bb                         iobclr      #(12 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (12 >> 3))]
                ;? gpioSetOutput(AUXIO_O_T_ON2);
-00ec ---- 76bc                         iobset      #(22 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (22 >> 3))]
+00ec ---- 67bb                         iobset      #(11 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (11 >> 3))]
+               ;?
+               ;? // Sample the LMT70 temp sensor 2
+               ;? adcSelectGpioInput(AUXIO_A_TAO_2);
+00ed ---- 701a                         ld          R7, #26
+00ee ---- 151e                         jsr         AdccompbSelectGpioInput
                ;?
                ;? // Wait for 1ms till LMT70 2 settles
                ;? fwDelayUs(1000);
-00ed 8603 03e8                         ld          R0, #1000
-00ef ---- 8801                         add         R0, #1
-00f0 ---- 8b49                         out         R0, [#IOP_EVCTL_PROGDLY]
-00f1 ---- 8db1                         wev1        #WEVSEL_PROG_DLY
-               ;?
+00ef 8603 03e8                         ld          R0, #1000
+00f1 ---- 8801                         add         R0, #1
+00f2 ---- 8b49                         out         R0, [#IOP_EVCTL_PROGDLY]
+00f3 ---- 8db1                         wev1        #WEVSEL_PROG_DLY
                ;?
                ;? adcGenManualTrigger();
-00f2 ---- 6491                         iobset      #0, [#IOP_ANAIF_ADCTRIG]
+00f4 ---- 6491                         iobset      #0, [#IOP_ANAIF_ADCTRIG]
                ;? adcReadFifo(adcValue_n1);
-00f3 ---- edb1                         wev1        #WEVSEL_ADC_FIFO_NOT_EMPTY
-00f4 ---- 8990                         in          R0, [#IOP_ANAIF_ADCFIFO]
+00f5 ---- edb1                         wev1        #WEVSEL_ADC_FIFO_NOT_EMPTY
+00f6 ---- 8990                         in          R0, [#IOP_ANAIF_ADCFIFO]
                ;? adcGenManualTrigger();
-00f5 ---- 6491                         iobset      #0, [#IOP_ANAIF_ADCTRIG]
+00f7 ---- 6491                         iobset      #0, [#IOP_ANAIF_ADCTRIG]
                ;? adcReadFifo(adcValue_n2);
-00f6 ---- edb1                         wev1        #WEVSEL_ADC_FIFO_NOT_EMPTY
-00f7 ---- 9990                         in          R1, [#IOP_ANAIF_ADCFIFO]
+00f8 ---- edb1                         wev1        #WEVSEL_ADC_FIFO_NOT_EMPTY
+00f9 ---- 9990                         in          R1, [#IOP_ANAIF_ADCFIFO]
                ;? adcGenManualTrigger();
-00f8 ---- 6491                         iobset      #0, [#IOP_ANAIF_ADCTRIG]
+00fa ---- 6491                         iobset      #0, [#IOP_ANAIF_ADCTRIG]
                ;? adcReadFifo(adcValue_n3);
-00f9 ---- edb1                         wev1        #WEVSEL_ADC_FIFO_NOT_EMPTY
-00fa ---- a990                         in          R2, [#IOP_ANAIF_ADCFIFO]
+00fb ---- edb1                         wev1        #WEVSEL_ADC_FIFO_NOT_EMPTY
+00fc ---- a990                         in          R2, [#IOP_ANAIF_ADCFIFO]
                ;?
                ;? if (adcValue_n1>adcValue_n2) {
-00fb ---- 8d29                         cmp         R0, R1
-00fc ---- fe09                         bles        /id0160
+00fd ---- 8d29                         cmp         R0, R1
+00fe ---- fe09                         bles        /id0162
                ;?     if (adcValue_n2>adcValue_n3) {
-00fd ---- 9d2a                             cmp         R1, R2
-00fe ---- fe02                             bles        /id0164
+00ff ---- 9d2a                             cmp         R1, R2
+0100 ---- fe02                             bles        /id0166
                ;?         median = adcValue_n2;
-00ff ---- 8d41                                 ld          R0, R1
+0101 ---- 8d41                                 ld          R0, R1
                ;?     } else {
-0100 ---- 0505                             jmp         /id0167
-               /id0164:
+0102 ---- 0507                             jmp         /id0169
+               /id0166:
                ;?         if (adcValue_n3>adcValue_n1) {
-0101 ---- ad28                                 cmp         R2, R0
-0102 ---- fe01                                 bles        /id0169
+0103 ---- ad28                                 cmp         R2, R0
+0104 ---- fe01                                 bles        /id0171
                ;?             median = adcValue_n1;
                ;?         } else {
-0103 ---- 0505                                 jmp         /id0172
+0105 ---- 0507                                 jmp         /id0174
+               /id0171:
+               ;?             median = adcValue_n3;
+0106 ---- 8d42                                     ld          R0, R2
+               ;?         }
+               /id0174:
+               ;?     }
                /id0169:
-               ;?             median = adcValue_n3;
-0104 ---- 8d42                                     ld          R0, R2
-               ;?         }
-               /id0172:
-               ;?     }
-               /id0167:
                ;? } else {
-0105 ---- 050e                         jmp         /id0163
-               /id0160:
+0107 ---- 0510                         jmp         /id0165
+               /id0162:
                ;?     if (adcValue_n2<adcValue_n3) {
-0106 ---- 9d2a                             cmp         R1, R2
-0107 ---- e602                             bges        /id0175
+0108 ---- 9d2a                             cmp         R1, R2
+0109 ---- e602                             bges        /id0177
                ;?         median = adcValue_n2;
-0108 ---- 8d41                                 ld          R0, R1
+010a ---- 8d41                                 ld          R0, R1
                ;?     } else {
-0109 ---- 050e                             jmp         /id0178
-               /id0175:
+010b ---- 0510                             jmp         /id0180
+               /id0177:
                ;?         if (adcValue_n3<adcValue_n1) {
-010a ---- ad28                                 cmp         R2, R0
-010b ---- e601                                 bges        /id0180
+010c ---- ad28                                 cmp         R2, R0
+010d ---- e601                                 bges        /id0182
                ;?             median = adcValue_n1;
                ;?         } else {
-010c ---- 050e                                 jmp         /id0183
-               /id0180:
+010e ---- 0510                                 jmp         /id0185
+               /id0182:
                ;?             median = adcValue_n3;
-010d ---- 8d42                                     ld          R0, R2
+010f ---- 8d42                                     ld          R0, R2
                ;?         }
-               /id0183:
+               /id0185:
                ;?     }
-               /id0178:
+               /id0180:
                ;? }
-               /id0163:
+               /id0165:
                ;? output.adcValue2 = median;
-010e ---- 0caf                         st          R0, [#simpleLmt70AdcCc1352/output/adcValue2]
+0110 ---- 0caf                         st          R0, [#simpleLmt70AdcCc1352/output/adcValue2]
                ;?
                ;? gpioClearOutput(AUXIO_O_T_ON2);
-010f ---- 56bc                         iobclr      #(22 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (22 >> 3))]
+0111 ---- 47bb                         iobclr      #(11 & 0x7), [#(IOP_AIODIO0_GPIODOUT + (11 >> 3))]
                ;?
                ;? // Disable the ADC
                ;? adcDisable();
-0110 ---- 1527                         jsr         AdcDisable
+0112 ---- 1529                         jsr         AdcDisable
                ;?
                ;? fwGenAlertInterrupt();
-0111 ---- 08a4                         ld          R0, [#fwCtrlInt/bvTaskIoAlert]
-0112 ---- 8201                         or          R0, #(1 << 0)
-0113 ---- 0ca4                         st          R0, [#fwCtrlInt/bvTaskIoAlert]
+0113 ---- 08a4                         ld          R0, [#fwCtrlInt/bvTaskIoAlert]
+0114 ---- 8201                         or          R0, #(1 << 0)
+0115 ---- 0ca4                         st          R0, [#fwCtrlInt/bvTaskIoAlert]
                ;?
                ;? // Schedule the next execution
                ;? fwScheduleTask(1);
-0114 ---- 0001                         ld          R0, #1
-0115 ---- 0c9e                         st          R0, [#(pFwTaskExecuteScheduleTable + 0)]
+0116 ---- 0001                         ld          R0, #1
+0117 ---- 0c9e                         st          R0, [#(pFwTaskExecuteScheduleTable + 0)]
                simpleLmt70AdcCc1352/executeDone:
-0116 ---- adb7                         rts
+0118 ---- adb7                         rts
 
 
 
@@ -657,7 +661,7 @@
                simpleLmt70AdcCc1352/terminate:
                ;?
                simpleLmt70AdcCc1352/terminateDone:
-0117 ---- adb7                         rts
+0119 ---- adb7                         rts
                .segment end "Task: Simple LMT70 ADC cc1352"
 
 
@@ -666,13 +670,13 @@
                ;     R7
                AdcDisableInputScaling:
                                        ; Disable the ADC input scaling
-0118 ---- 7100                         ld          R7, #ADI16_ADC_SCALE_DIS
-0119 ---- fb9e                         out         R7, [#IOP_ADISET_ADC]
+011a ---- 7100                         ld          R7, #ADI16_ADC_SCALE_DIS
+011b ---- fb9e                         out         R7, [#IOP_ADISET_ADC]
 
                                        ; Flush the ADI interface
-011a ---- fb9e                         out         R7, [#IOP_ADISET_ADC]
+011c ---- fb9e                         out         R7, [#IOP_ADISET_ADC]
 
-011b ---- adb7                         rts
+011d ---- adb7                         rts
 
 
 
@@ -684,22 +688,22 @@
                ;     R6, R7
                AdccompbSelectGpioInput:
                                        ; Make sure that the AUX I/O index is valid
-011c ---- f8ed                         add         R7, #-ADI_ANALOG_MUX_AUXIO_BASE_INDEX
-011d ---- f007                         and         R7, #0x0007
+011e ---- f8ed                         add         R7, #-ADI_ANALOG_MUX_AUXIO_BASE_INDEX
+011f ---- f007                         and         R7, #0x0007
 
                                        ; Disconnect all signals
-011e 86ff 63f8                         ld          R6, #(BV_ADI16_MUX2_ADCCOMPB_IN | BV_ADI16_MUX3_ADCCOMPB_IN)
-0120 ---- eba3                         out         R6, [#IOP_ADICLR_MUX2_MUX3]
+0120 86ff 63f8                         ld          R6, #(BV_ADI16_MUX2_ADCCOMPB_IN | BV_ADI16_MUX3_ADCCOMPB_IN)
+0122 ---- eba3                         out         R6, [#IOP_ADICLR_MUX2_MUX3]
 
                                        ; Connect the specified GPIO
-0121 8680 6000                         ld          R6, #ADI16_MUX3_ADCCOMPB_IN_AUXIO0
-0123 ---- ed8f                         lsr         R6, R7
-0124 ---- eb9b                         out         R6, [#IOP_ADISET_MUX2_MUX3]
+0123 8680 6000                         ld          R6, #ADI16_MUX3_ADCCOMPB_IN_AUXIO0
+0125 ---- ed8f                         lsr         R6, R7
+0126 ---- eb9b                         out         R6, [#IOP_ADISET_MUX2_MUX3]
 
                                        ; Flush the ADI interface
-0125 ---- eb9b                         out         R6, [#IOP_ADISET_MUX2_MUX3]
+0127 ---- eb9b                         out         R6, [#IOP_ADISET_MUX2_MUX3]
 
-0126 ---- adb7                         rts
+0128 ---- adb7                         rts
 
 
 
@@ -708,24 +712,24 @@
                ;     R7
                AdcDisable:
                                        ; Disable the ADC reference
-0127 ---- 7079                         ld          R7, #((ADI16_ADCREF_EN | ADI16_ADCREF_REF_ON_IDLE) | (ADI16_ADCREF_SRC | (ADI16_ADCREF_EXT | ADI16_ADCREF_IOMUX)))
-0128 ---- fba7                         out         R7, [#IOP_ADICLR_ADCREF]
+0129 ---- 7079                         ld          R7, #((ADI16_ADCREF_EN | ADI16_ADCREF_REF_ON_IDLE) | (ADI16_ADCREF_SRC | (ADI16_ADCREF_EXT | ADI16_ADCREF_IOMUX)))
+012a ---- fba7                         out         R7, [#IOP_ADICLR_ADCREF]
 
                                        ; Assert reset and disable the ADC
-0129 ---- 71fb                         ld          R7, #((ADI16_ADC_EN | ADI16_ADC_RESET_N) | (BV_ADI16_ADC_SMPL_CYCLE_EXP | (BV_ADI16_ADC_SMPL_MODE | ADI16_ADC_SCALE_DIS)))
-012a ---- fba6                         out         R7, [#IOP_ADICLR_ADC]
+012b ---- 71fb                         ld          R7, #((ADI16_ADC_EN | ADI16_ADC_RESET_N) | (BV_ADI16_ADC_SMPL_CYCLE_EXP | (BV_ADI16_ADC_SMPL_MODE | ADI16_ADC_SCALE_DIS)))
+012c ---- fba6                         out         R7, [#IOP_ADICLR_ADC]
 
                                        ; Flush the ADI interface
-012b ---- fba6                         out         R7, [#IOP_ADICLR_ADC]
+012d ---- fba6                         out         R7, [#IOP_ADICLR_ADC]
 
                                        ; Disable the ADC clock (no need to wait since IOB_SYSIF_ADCCLKCTL_ACK goes low immediately)
-012c ---- 4467                         iobclr      #IOB_SYSIF_ADCCLKCTL_REQ, [#IOP_SYSIF_ADCCLKCTL]
+012e ---- 4467                         iobclr      #IOB_SYSIF_ADCCLKCTL_REQ, [#IOP_SYSIF_ADCCLKCTL]
 
                                        ; Disable the ADC data interface
-012d ---- 448e                         iobclr      #0, [#IOP_ANAIF_ADCCTL]
+012f ---- 448e                         iobclr      #0, [#IOP_ANAIF_ADCCTL]
 
-012e ---- adb7                         rts
+0130 ---- adb7                         rts
                .segment end "Procedure Libary"
 
 
-; Generated by DESKTOP-SB0S8NL at 2019-06-12 23:58:03.123
+; Generated by DESKTOP-SB0S8NL at 2019-10-07 11:44:37.664

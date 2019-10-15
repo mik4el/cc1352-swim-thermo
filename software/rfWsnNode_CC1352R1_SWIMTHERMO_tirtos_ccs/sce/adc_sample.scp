@@ -15,9 +15,7 @@
     <pattr name="Run-time logging UART RX pin"></pattr>
     <pattr name="Run-time logging UART TX pin"></pattr>
     <task name="Simple LMT70 ADC cc1352">
-        <desc><![CDATA[Sampling the LMT70s on DIO7 and toggle between T_ON1 and T_ON2 on the CC1352 SWIMTHERMO according to TI application note.]]></desc>
-        <tattr name="BIN_COUNT" desc="Number of ADC value bins" type="dec" content="const" scope="task" min="0" max="65535">5</tattr>
-        <tattr name="THRESHOLD_COUNT" desc="Number of bin thresholds" type="expr" content="const" scope="task" min="0" max="65535">BIN_COUNT + 1</tattr>
+        <desc><![CDATA[Sampling the LMT70s on TAO_1:DIO_24 and TAO_2:DIO_23 and toggle between T_ON1:DIO_6 and T_ON2:DIO_7 on the CC1352 SWIMTHERMO according to TI application note.]]></desc>
         <tattr name="output.adcValue1" type="expr" content="struct" scope="task" min="0" max="65535">0</tattr>
         <tattr name="output.adcValue2" type="expr" content="struct" scope="task" min="0" max="65535">0</tattr>
         <resource_ref name="ADC" enabled="1"/>
@@ -26,9 +24,20 @@
         <resource_ref name="Analog Open-Drain Pins" enabled="0"/>
         <resource_ref name="Analog Open-Source Pins" enabled="0"/>
         <resource_ref name="Analog Pins" enabled="1">
-            <io_usage name="LMT70_IN" label="Input for LMT70">
+            <io_usage name="TAO_2" label="Input for LMT70 2">
                 <uattr name="Pin count">0</uattr>
-                <uattr name="Pin/0000">DIO25</uattr>
+                <uattr name="Pin/0000">DIO23</uattr>
+                <uattr name="Pin/0001"></uattr>
+                <uattr name="Pin/0002"></uattr>
+                <uattr name="Pin/0003"></uattr>
+                <uattr name="Pin/0004"></uattr>
+                <uattr name="Pin/0005"></uattr>
+                <uattr name="Pin/0006"></uattr>
+                <uattr name="Pin/0007"></uattr>
+            </io_usage>
+            <io_usage name="TAO_1" label="Input for LMT70 1">
+                <uattr name="Pin count">0</uattr>
+                <uattr name="Pin/0000">DIO24</uattr>
                 <uattr name="Pin/0001"></uattr>
                 <uattr name="Pin/0002"></uattr>
                 <uattr name="Pin/0003"></uattr>
@@ -53,7 +62,7 @@
                 <uattr name="Output drive strength">0</uattr>
                 <uattr name="Output value on initialization">0</uattr>
                 <uattr name="Pin count">0</uattr>
-                <uattr name="Pin/0000">DIO26</uattr>
+                <uattr name="Pin/0000">DIO6</uattr>
                 <uattr name="Pin/0001"></uattr>
                 <uattr name="Pin/0002"></uattr>
                 <uattr name="Pin/0003"></uattr>
@@ -91,7 +100,7 @@
                 <uattr name="Output drive strength">0</uattr>
                 <uattr name="Output value on initialization">0</uattr>
                 <uattr name="Pin count">0</uattr>
-                <uattr name="Pin/0000">DIO27</uattr>
+                <uattr name="Pin/0000">DIO7</uattr>
                 <uattr name="Pin/0001"></uattr>
                 <uattr name="Pin/0002"></uattr>
                 <uattr name="Pin/0003"></uattr>
@@ -199,7 +208,7 @@ adcDisableInputScaling();
 adcEnableSync(ADC_REF_FIXED, ADC_SAMPLE_TIME_10P9_MS, ADC_TRIGGER_MANUAL);
 
 // Sample the LMT70 temp sensor 1
-adcSelectGpioInput(AUXIO_A_LMT70_IN); //DIO_7
+adcSelectGpioInput(AUXIO_A_TAO_1);
 
 // Sample the ADC
 S16 adcValue_n1;
@@ -241,9 +250,11 @@ output.adcValue1 = median;
 gpioClearOutput(AUXIO_O_T_ON1);
 gpioSetOutput(AUXIO_O_T_ON2);
 
+// Sample the LMT70 temp sensor 2
+adcSelectGpioInput(AUXIO_A_TAO_2);
+
 // Wait for 1ms till LMT70 2 settles
 fwDelayUs(1000);
-
 
 adcGenManualTrigger();
 adcReadFifo(adcValue_n1);
