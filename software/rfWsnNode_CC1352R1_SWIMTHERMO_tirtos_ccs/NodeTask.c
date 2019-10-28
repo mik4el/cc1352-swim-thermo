@@ -81,6 +81,7 @@ static PIN_State pinState;
 PIN_Config pinTable[] = {
                          CC1352R1_SWIMTHERMO_T_ON_1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_1 should be default low */
                          CC1352R1_SWIMTHERMO_T_ON_2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL, /* T_ON_2 should be default low */
+                         CC1352R1_SWIMTHERMO_PSU_ENABLE | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX, /* LED PSU initially off */
                          CC1352R1_SWIMTHERMO_SWITCH  | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
                          PIN_TERMINATE
                         };
