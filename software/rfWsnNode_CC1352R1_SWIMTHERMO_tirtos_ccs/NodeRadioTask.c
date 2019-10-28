@@ -68,10 +68,6 @@
 #include DeviceFamily_constructPath(driverlib/trng.h)
 #include DeviceFamily_constructPath(driverlib/aux_adc.h) //for ADC operations
 
-#ifdef FEATURE_BLE_ADV
-#include "ble_adv/BleAdv.h"
-#endif
-
 /***** Defines *****/
 #define NODERADIO_TASK_STACK_SIZE 1024
 #define NODERADIO_TASK_PRIORITY   3
@@ -81,9 +77,6 @@
 #define RADIO_EVENT_DATA_ACK_RECEIVED   (uint32_t)(1 << 1)
 #define RADIO_EVENT_ACK_TIMEOUT         (uint32_t)(1 << 2)
 #define RADIO_EVENT_SEND_FAIL           (uint32_t)(1 << 3)
-#ifdef FEATURE_BLE_ADV
-#define NODE_EVENT_UBLE                 (uint32_t)(1 << 4)
-#endif
 
 #define NODERADIO_MAX_RETRIES 2
 #define NORERADIO_ACK_TIMEOUT_TIME_MS (160)
@@ -126,11 +119,6 @@ static void sendDmPacket(struct DualModeInternalTempSensorPacket sensorPacket, u
 static void resendPacket(void);
 static void rxDoneCallback(EasyLink_RxPacket * rxPacket, EasyLink_Status status);
 
-#ifdef FEATURE_BLE_ADV
-static void bleAdv_eventProxyCB(void);
-static void bleAdv_updateTlmCB(uint16_t *pVbatt, uint16_t *pTemp, uint32_t *pTime100MiliSec);
-#endif
-
 /***** Function definitions *****/
 double convertADCToTempDouble(uint16_t adcValue) {
     return -0.193 * adcValue * (AUXADC_FIXED_REF_VOLTAGE_UNSCALED / 1000)  / 4095 + 212.009; // constants from LMT70 datasheet
@@ -170,21 +158,10 @@ uint8_t nodeRadioTask_getNodeAddr(void)
 
 static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
 {
-#ifdef FEATURE_BLE_ADV
-    BleAdv_Params_t bleAdv_Params;
-    /* Set mulitclient mode for EasyLink */
-    EasyLink_setCtrl(EasyLink_Ctrl_MultiClient_Mode, 1);
-
-#endif
-
     EasyLink_Params easyLink_params;
     EasyLink_Params_init(&easyLink_params);
 
     easyLink_params.ui32ModType = RADIO_EASYLINK_MODULATION;
-#ifdef FEATURE_BLE_ADV
-    easyLink_params.pClientEventCb = &rfSwitchCallback;
-    easyLink_params.nClientEventMask = RF_ClientEventSwitchClientEntered;
-#endif
 
     /* Initialize EasyLink */
     if(EasyLink_init(&easyLink_params) != EasyLink_Status_Success){
@@ -223,21 +200,6 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
 
     /* Initialise previous Tick count used to calculate uptime for the TLM beacon */
     prevTicks = Clock_getTicks();
-
-#ifdef FEATURE_BLE_ADV
-    /* Initialize the Simple Beacon module wit default params */
-    BleAdv_Params_init(&bleAdv_Params);
-    bleAdv_Params.pfnPostEvtProxyCB = bleAdv_eventProxyCB;
-    bleAdv_Params.pfnUpdateTlmCB = bleAdv_updateTlmCB;
-    bleAdv_Params.pfnUpdateMsButtonCB = bleAdv_updateMsButtonCB;
-    bleAdv_Params.pfnAdvStatsCB = NodeTask_advStatsCB;
-    BleAdv_init(&bleAdv_Params);
-    char url_format[] = "https://m4bd.com/s/%x/";
-    char url_ready[21];
-    sprintf(url_ready, url_format, nodeAddress);
-    BleAdv_updateUrl(url_ready);
-    BleAdv_setAdvertiserType(BleAdv_AdertiserNone);
-#endif
 
     /* Enter main task loop */
     while (1)
@@ -299,12 +261,6 @@ static void nodeRadioTaskFunction(UArg arg0, UArg arg1)
             returnRadioOperationStatus(NodeRadioStatus_Failed);
         }
 
-#ifdef FEATURE_BLE_ADV
-        if (events & NODE_EVENT_UBLE)
-        {
-            uble_processMsg();
-        }
-#endif
     }
 }
 
@@ -401,43 +357,6 @@ static void resendPacket(void)
     /* Increase retries by one */
     currentRadioOperation.retriesDone++;
 }
-
-#ifdef FEATURE_BLE_ADV
-/*********************************************************************
-* @fn      bleAdv_eventProxyCB
-*
-* @brief   Post an event to the application so that a Micro BLE Stack internal
-*          event is processed by Micro BLE Stack later in the application
-*          task's context.
-*
-* @param   None
-*
-* @return  None
-*/
-static void bleAdv_eventProxyCB(void)
-{
-    /* Post event */
-    Event_post(radioOperationEventHandle, NODE_EVENT_UBLE);
-}
-
-/*********************************************************************
-* @fn      bleAdv_updateTlmCB
-
-* @brief Callback to update the TLM data
-*
-* @param pvBatt Battery level
-* @param pTemp Current temperature
-* @param pTime100MiliSec time since boot in 100ms units
-*
-* @return  None
-*/
-static void bleAdv_updateTlmCB(uint16_t *pvBatt, uint16_t *pTemp, uint32_t *pTime100MiliSec)
-{
-    *pvBatt = dmInternalTempSensorPacket.batt;
-    *pTemp = dmInternalTempSensorPacket.temp2;
-    *pTime100MiliSec = dmInternalTempSensorPacket.time100MiliSec/10;
-}
-#endif
 
 static void rxDoneCallback(EasyLink_RxPacket * rxPacket, EasyLink_Status status)
 {

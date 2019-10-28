@@ -36,8 +36,6 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-#define NODE_ACTIVITY_LED Board_PIN_LED0
-
 enum NodeRadioOperationStatus {
     NodeRadioStatus_Success,
     NodeRadioStatus_Failed,

@@ -3,7 +3,7 @@ Based of https://github.com/mik4el/cc1352-swim-thermo/tree/master/software/rfWsn
 
 Features include:
 
-* Sleeps e.g. 10 minutes, then reads two LMT70 sensors and broadcasts and acks packets with two temperature values.
+* Sleeps e.g. 10s, then reads two LMT70 sensors and broadcasts and acks packets with two temperature values.
 * Low current sleep mode ~60uA with current board (should be possible to reach ~4uA with improved hardware design)
 
 ## Pinout

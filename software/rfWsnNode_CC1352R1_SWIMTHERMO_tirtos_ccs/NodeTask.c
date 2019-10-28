@@ -85,10 +85,6 @@ PIN_Config pinTable[] = {
                          PIN_TERMINATE
                         };
 
-#ifdef FEATURE_BLE_ADV
-static BleAdv_Stats bleAdvStats = {0};
-#endif
-
 /***** Prototypes *****/
 static void nodeTaskFunction(UArg arg0, UArg arg1);
 static void adcCallback(uint16_t adcValue1, uint16_t adcValue2);
@@ -110,13 +106,6 @@ void NodeTask_init(void)
     nodeTaskParams.stack = &nodeTaskStack;
     Task_construct(&nodeTask, nodeTaskFunction, &nodeTaskParams, NULL);
 }
-
-#ifdef FEATURE_BLE_ADV
-void NodeTask_advStatsCB(BleAdv_Stats stats)
-{
-    memcpy(&bleAdvStats, &stats, sizeof(BleAdv_Stats));
-}
-#endif
 
 static void nodeTaskFunction(UArg arg0, UArg arg1)
 {
@@ -171,24 +160,6 @@ static void buttonCallback(PIN_Handle handle, PIN_Id pinId)
 {
     /* Debounce logic, only toggle if the button is still pushed (low) */
     CPUdelay(8000*50);
-
-#ifdef FEATURE_BLE_ADV
-    if (PIN_getInputValue(Board_PIN_BUTTON1) == 0)
-    {
-        if (advertisementType == BleAdv_AdertiserUrl)
-        {
-            advertisementType = BleAdv_AdertiserNone;
-        } else {
-            advertisementType = BleAdv_AdertiserUrl;
-        }
-
-        //Set advertisement type
-        BleAdv_setAdvertiserType(advertisementType);
+    if (PIN_getInputValue(CC1352R1_SWIMTHERMO_SWITCH) == 0) {
     }
-#endif
 }
-
-#ifdef FEATURE_BLE_ADV
-void rfSwitchCallback(RF_Handle h, RF_ClientEvent event, void* arg){
-}
-#endif
