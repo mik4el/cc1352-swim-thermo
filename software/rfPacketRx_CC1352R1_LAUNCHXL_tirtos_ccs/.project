@@ -29,7 +29,7 @@
 		<link>
 			<name>Board.html</name>
 			<type>1</type>
-			<locationURI>COM_TI_SIMPLELINK_CC13X2_SDK_INSTALL_DIR/source/ti/boards/CC1352R1_LAUNCHXL/Board.html</locationURI>
+			<locationURI>COM_TI_SIMPLELINK_CC13X2_26X2_SDK_INSTALL_DIR/source/ti/boards/CC1352R1_LAUNCHXL/Board.html</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

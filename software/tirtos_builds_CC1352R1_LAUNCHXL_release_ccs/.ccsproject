@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?ccsproject version="1.0"?>
 <projectOptions>
-	<ccsVersion value="8.1.0"/>
+	<ccsVersion value="9.2.0"/>
 	<deviceVariant value="Cortex M.CC1352R1F3"/>
 	<deviceFamily value="TMS470"/>
 	<deviceEndianness value="little"/>
-	<codegenToolVersion value="18.1.3.LTS"/>
+	<codegenToolVersion value="18.12.3.LTS"/>
 	<isElfFormat value="true"/>
 	<connection value="common/targetdb/connections/TIXDS110_Connection.xml"/>
 	<createSlaveProjects value=""/>
 	<ignoreDefaultDeviceSettings value="true"/>
 	<ignoreDefaultCCSSettings value="true"/>
-	<templateProperties value="id=tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.projectspec.tirtos_builds_CC1352R1_LAUNCHXL_release_ccs,products=com.ti.SIMPLELINK_CC13X2_SDK,xdcToolsVersion=3.50.999,target=ti.targets.arm.elf.M4F,platform=ti.platforms.simplelink:CC1352,buildProfile=release,configuroOptions= --compileOptions &quot; -DDeviceFamily_CC13X2 &quot;"/>
-	<origin value="/Users/mikael/Code/testing-cc1352/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs"/>
+	<templateProperties value="id=tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.projectspec.tirtos_builds_CC1352R1_LAUNCHXL_release_ccs,products=com.ti.SIMPLELINK_CC13X2_26X2_SDK,xdcToolsVersion=3.60.999,target=ti.targets.arm.elf.M4F,platform=ti.platforms.simplelink:CC1352,buildProfile=release,configuroOptions= --compileOptions &quot; -DDeviceFamily_CC13X2 &quot;"/>
+	<origin value="/Users/mikaelandersson/ti/simplelink_cc13x2_26x2_sdk_3_30_00_03/kernel/tirtos/builds/CC1352R1_LAUNCHXL/release/ccs/tirtos_builds_CC1352R1_LAUNCHXL_release_ccs.projectspec"/>
 	<filesToOpen value=""/>
 </projectOptions>

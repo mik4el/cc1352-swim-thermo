@@ -1,2 +1,5 @@
 /.metadata/
 .jxbrowser-data
+dvt/
+RemoteSystemsTempFiles/
+.DS_Store

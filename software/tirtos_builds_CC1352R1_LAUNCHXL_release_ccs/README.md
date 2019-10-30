@@ -14,3 +14,8 @@ examples. It was selected as the default to minimize code size.
 
 Please refer to the TI-RTOS Kernel section in the SimpleLink MCU SDK User's
 Guide for the details on how applications use this project.
+
+## Kernel Resources
+
+The TI-RTOS kernel uses the Real Time Clock (RTC) and its associated
+interrupt(s).

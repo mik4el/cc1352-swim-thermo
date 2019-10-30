@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <ti/devices/cc13x2_cc26x2_v1/driverlib/ioc.h>
-#include <ti/devices/cc13x2_cc26x2_v1/driverlib/cpu.h>
-#include <ti/drivers/rf/RF.h>
+#include <ti/devices/cc13x2_cc26x2/driverlib/ioc.h>
+#include <ti/devices/cc13x2_cc26x2/driverlib/cpu.h>
 #include <ti/drivers/pin/PINCC26XX.h>
 
-#include "Board.h"
+#include <ti/drivers/Board.h>
 
 /*
  *  ======== CC1352R1_LAUNCHXL_sendExtFlashByte ========
@@ -155,32 +154,3 @@ void Board_initHook()
 {
     CC1352R1_LAUNCHXL_shutDownExtFlash();
 }
-
-/*
- *  For the SysConfig generated Board.h file, Board_RF_SUB1GHZ will not be
- *  defined unless the RF module is added to the configuration.  Therefore,
- *  we don't include this code if Board_RF_SUB1GHZ is not defined.
- */
-#if defined(Board_RF_SUB1GHZ)
-
-/*
- * ======== rfDriverCallback ========
- * This is an implementation for the CC1352R1 launchpad which uses a
- * single signal for antenna switching.
- */
-void rfDriverCallback(RF_Handle client, RF_GlobalEvent events, void *arg)
-{
-    (void)client;
-    RF_RadioSetup* setupCommand = (RF_RadioSetup*)arg;
-
-    if ((events & RF_GlobalEventRadioSetup) &&
-            (setupCommand->common.commandNo == CMD_PROP_RADIO_DIV_SETUP)) {
-        /* Sub-1 GHz, requires antenna switch high */
-        PINCC26XX_setOutputValue(Board_RF_SUB1GHZ, 1);
-    }
-    else if (events & RF_GlobalEventRadioPowerDown) {
-        /* Disable antenna switch to save current */
-        PINCC26XX_setOutputValue(Board_RF_SUB1GHZ, 0);
-    }
-}
-#endif

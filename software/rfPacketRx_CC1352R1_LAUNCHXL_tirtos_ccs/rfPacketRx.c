@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Texas Instruments Incorporated
+ * Copyright (c) 2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,34 +32,21 @@
 
 /***** Includes *****/
 /* Standard C Libraries */
-#include <smartrf_settings/smartrf_settings.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <unistd.h>
 
 /* TI Drivers */
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/PIN.h>
 
-/* Threading */
-#include <pthread.h>
-#include <unistd.h>
-#define THREADSTACKSIZE (1024)
-
-/* Display Header files */
-#include <ti/display/Display.h>
-
 /* Driverlib Header files */
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
 /* Board Header files */
-#include "Board.h"
+#include "ti_drivers_config.h"
 
 /* Application Header files */
 #include "RFQueue.h"
-
-/* Time */
-#include <ti/sysbios/hal/Seconds.h>
+#include <ti_radio_config.h>
 
 /***** Defines *****/
 
@@ -89,21 +76,21 @@ static PIN_State ledPinState;
  * Pragmas are needed to make sure this buffer is 4 byte aligned (requirement from the RF Core) */
 #if defined(__TI_COMPILER_VERSION__)
 #pragma DATA_ALIGN (rxDataEntryBuffer, 4);
-static uint8_t 
+static uint8_t
 rxDataEntryBuffer[RF_QUEUE_DATA_ENTRY_BUFFER_SIZE(NUM_DATA_ENTRIES,
                                                   MAX_LENGTH,
                                                   NUM_APPENDED_BYTES)];
 #elif defined(__IAR_SYSTEMS_ICC__)
 #pragma data_alignment = 4
-static uint8_t 
+static uint8_t
 rxDataEntryBuffer[RF_QUEUE_DATA_ENTRY_BUFFER_SIZE(NUM_DATA_ENTRIES,
                                                   MAX_LENGTH,
                                                   NUM_APPENDED_BYTES)];
 #elif defined(__GNUC__)
-static uint8_t 
+static uint8_t
 rxDataEntryBuffer[RF_QUEUE_DATA_ENTRY_BUFFER_SIZE(NUM_DATA_ENTRIES,
-                                                  MAX_LENGTH, 
-                                                  NUM_APPENDED_BYTES)] 
+                                                  MAX_LENGTH,
+                                                  NUM_APPENDED_BYTES)]
                                                   __attribute__((aligned(4)));
 #else
 #error This compiler is not supported.
@@ -117,94 +104,21 @@ static uint8_t* packetDataPointer;
 
 
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
-int rx_n = 0;
-uint32_t rx_timestamp_ms = 0;
+
 /*
  * Application LED pin configuration table:
  *   - All LEDs board LEDs are off.
  */
 PIN_Config pinTable[] =
 {
-    Board_PIN_LED2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-#if defined Board_CC1352R1_LAUNCHXL
-    Board_DIO30_RFSW | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-#endif
+    CONFIG_PIN_RLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
 	PIN_TERMINATE
 };
 
 /***** Function definitions *****/
 
-void *displayThread(void *arg0)
-{
-    Display_Handle hLcd;
-    Display_Params params;
-
-    Display_init();
-
-    /* Initialize display and try to open both UART and LCD types of display. */
-    Display_Params_init(&params);
-    params.lineClearMode = DISPLAY_CLEAR_BOTH;
-
-    hLcd = Display_open(Display_Type_LCD, &params);
-
-    Display_clear(hLcd);
-    Display_printf(hLcd, 3, 3, "Packet RX");
-    sleep(2);
-    Display_clear(hLcd);
-
-    Seconds_set(0);
-
-    uint32_t delta_t = 0;
-    while(1) {
-        Display_printf(hLcd, 0, 0, "Packet RX");
-        if (rx_n > 0) {
-            delta_t = ti_sysbios_hal_Seconds_get() - rx_timestamp_ms;
-            Display_printf(hLcd, 2, 0, "rx_n: %i", rx_n);
-            if (delta_t > 1) {
-                Display_printf(hLcd, 3, 0, "time: %is", delta_t);
-            } else {
-                Display_printf(hLcd, 3, 0, "time: ...");
-            }
-        }
-    }
-}
-
-
 void *mainThread(void *arg0)
 {
-    /* Create application threads */
-    pthread_t           thread0;
-    pthread_attr_t      attrs;
-    struct sched_param  priParam;
-    int                 retc;
-    int                 detachState;
-
-    pthread_attr_init(&attrs);
-
-    detachState = PTHREAD_CREATE_DETACHED;
-    /* Set priority and stack size attributes */
-    retc = pthread_attr_setdetachstate(&attrs, detachState);
-    if (retc != 0) {
-        /* pthread_attr_setdetachstate() failed */
-        while (1);
-    }
-
-    retc |= pthread_attr_setstacksize(&attrs, THREADSTACKSIZE);
-    if (retc != 0) {
-        /* pthread_attr_setstacksize() failed */
-        while (1);
-    }
-
-    /* Create displayThread thread */
-    priParam.sched_priority = 1;
-    pthread_attr_setschedparam(&attrs, &priParam);
-
-    retc = pthread_create(&thread0, &attrs, displayThread, NULL);
-    if (retc != 0) {
-        /* pthread_create() failed */
-        while (1);
-    }
-
     RF_Params rfParams;
     RF_Params_init(&rfParams);
 
@@ -227,19 +141,22 @@ void *mainThread(void *arg0)
 
     /* Modify CMD_PROP_RX command for application needs */
     /* Set the Data Entity queue for received data */
-    RF_cmdPropRx.pQueue = &dataQueue;           
+    RF_cmdPropRx.pQueue = &dataQueue;
     /* Discard ignored packets from Rx queue */
-    RF_cmdPropRx.rxConf.bAutoFlushIgnored = 1;  
+    RF_cmdPropRx.rxConf.bAutoFlushIgnored = 1;
     /* Discard packets with CRC error from Rx queue */
-    RF_cmdPropRx.rxConf.bAutoFlushCrcErr = 1;   
+    RF_cmdPropRx.rxConf.bAutoFlushCrcErr = 1;
     /* Implement packet length filtering to avoid PROP_ERROR_RXBUF */
-    RF_cmdPropRx.maxPktLen = MAX_LENGTH;        
+    RF_cmdPropRx.maxPktLen = MAX_LENGTH;
     RF_cmdPropRx.pktConf.bRepeatOk = 1;
     RF_cmdPropRx.pktConf.bRepeatNok = 1;
 
     /* Request access to the radio */
-    rfHandle = RF_open(&rfObject, &RF_prop, 
-                       (RF_RadioSetup*)&RF_cmdPropRadioDivSetup, &rfParams);
+#if defined(DeviceFamily_CC26X0R2)
+    rfHandle = RF_open(&rfObject, &RF_prop, (RF_RadioSetup*)&RF_cmdPropRadioSetup, &rfParams);
+#else
+    rfHandle = RF_open(&rfObject, &RF_prop, (RF_RadioSetup*)&RF_cmdPropRadioDivSetup, &rfParams);
+#endif// DeviceFamily_CC26X0R2
 
     /* Set the frequency */
     RF_postCmd(rfHandle, (RF_Op*)&RF_cmdFs, RF_PriorityNormal, NULL, 0);
@@ -327,19 +244,15 @@ void *mainThread(void *arg0)
     }
 
     while(1);
-
 }
 
 void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
     if (e & RF_EventRxEntryDone)
     {
-        /* Indicate RX */
-        PIN_setOutputValue(ledPinHandle, Board_PIN_LED2,
-                           !PIN_getOutputValue(Board_PIN_LED2));
-
-        rx_n += 1;
-        rx_timestamp_ms = ti_sysbios_hal_Seconds_get();
+        /* Toggle pin to indicate RX */
+        PIN_setOutputValue(ledPinHandle, CONFIG_PIN_RLED,
+                           !PIN_getOutputValue(CONFIG_PIN_RLED));
 
         /* Get current unhandled data entry */
         currentDataEntry = RFQueue_getDataEntry();
